@@ -1,0 +1,32 @@
+# 🔨 Build output
+build/
+bin/
+obj/
+
+# ⚙️ CMake
+CMakeFiles/
+CMakeCache.txt
+cmake-build-*/
+compile_commands.json
+
+# 🧠 Compiled files
+*.o
+*.out
+*.exe
+*.a
+*.so
+
+# 🧪 Debug / temp
+*.log
+*.tmp
+
+# 🗂️ Cache
+.cache/
+
+# 💻 Editor
+.vscode/
+.idea/
+
+# 🧾 OS
+.DS_Store
+Thumbs.db
