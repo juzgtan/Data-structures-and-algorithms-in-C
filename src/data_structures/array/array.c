@@ -149,3 +149,19 @@ void Array_Destroy(Array *arr) {
   /* Step 4: Free the struct itself */
   free(arr);
 }
+
+/**
+ * Array_Clear - Removes all elements but keeps the capacity
+ *
+ * Simply reserts size to 0. The data buffer remains allocated
+ * to avoid rellocation when elements are added again
+ *
+ * @param arr Array to clean
+ *
+ * @complexity(01)
+ */
+void Array_Clear(Array *arr) {
+  if (arr != NULL) {
+    arr->size = 0;
+  }
+}
