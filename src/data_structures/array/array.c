@@ -115,3 +115,37 @@ ResultCode Array_Create(size_t item_size, Array **result) {
   *result = arr;
   return kSuccess;
 }
+/*
+ * Array_Destroys - Frees all memory assosiated with the array
+ *
+ * Implementation flow:
+ * 1. Check if array is NULL (siletly return)
+ * 2. Free the data buffer is it exitsts
+ * 3. Reset all fields to zero (hekp detect use-after-free bugs)
+ * 4. Free the array strcut itself
+ *
+ * @param arr Array to destroy (can be NULL)
+ *
+ * @complexity (O(1))
+ */
+
+void Array_Destroy(Array *arr) {
+  /* Step 1: Handle NULL gracefully */
+  if (arr == NULL) {
+    return;
+  }
+
+  /* Step 2: Free data buffer if allocated */
+  if (arr->data != NULL) {
+    free(arr->data);
+    arr->data = NULL; // Prevent dangling pointer
+  }
+
+  /* Step 3: Reset fields (help debug use-affter-free issues )*/
+  arr->size = 0;
+  arr->capacity = 0;
+  arr->item_size = 0;
+
+  /* Step 4: Free the struct itself */
+  free(arr);
+}
