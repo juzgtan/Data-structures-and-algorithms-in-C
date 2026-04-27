@@ -165,3 +165,16 @@ void Array_Clear(Array *arr) {
     arr->size = 0;
   }
 }
+/* ============================================================================
+ * CAPACITY FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * Array_Size - Return numbers of elements current in the array
+ * Return 0 if array is NULL (safe behavior)
+ *
+ * @complecity O(1)
+ */
+
+size_t Array_Size(const Array *arr) { return arr == NULL ? 0 : arr->size; }
