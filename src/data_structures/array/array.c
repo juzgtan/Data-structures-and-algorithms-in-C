@@ -158,7 +158,7 @@ void Array_Destroy(Array *arr) {
  *
  * @param arr Array to clean
  *
- * @complexity(01)
+ * @complexitIy(01)
  */
 void Array_Clear(Array *arr) {
   if (arr != NULL) {
@@ -176,5 +176,22 @@ void Array_Clear(Array *arr) {
  *
  * @complecity O(1)
  */
-
 size_t Array_Size(const Array *arr) { return arr == NULL ? 0 : arr->size; }
+
+/**
+ * Array_Capacity - Return the current capacity
+ * Return 0 if array is NULL
+ *
+ * @complecity O(1)
+ */
+size_t Array_Capacity(const Array *arr) {
+  return arr == NULL ? 0 : arr->capacity;
+}
+
+/**
+ * Array_IsEmpty - Check if array contains any elements
+ * Return true is array is NULL or Array_IsEmpty
+ *
+ * @complecity O(1)
+ */
+bool Array_IsEmpty(const Array *arr) { return arr == NULL ? true : arr->size; }
