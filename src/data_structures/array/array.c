@@ -199,8 +199,8 @@ bool Array_IsEmpty(const Array *arr) { return arr == NULL ? true : arr->size; }
 /**
  * Array_Reserve - Reserves memory for a specific capacity
  *
- * Implememtatkon flow:
- * 1. Validate array not NUUL
+ * Implememtation flow:
+ * 1. Validate array not NULL
  * 2. Ensure new_capacity >= current size
  * 3. Check if capacity already matches (no-op)
  * 4: Check for overflow in multiplication
@@ -209,9 +209,9 @@ bool Array_IsEmpty(const Array *arr) { return arr == NULL ? true : arr->size; }
  *
  * @param arr Array to modify
  * param new_capacity Desired capacity
- * @return Return Result Result Code
+ * @return Return Result Code
  *
- * complecity O(n) where n is the number of elements (due to reallocation)
+ * complexity O(n) where n is the number of elements (due to reallocation)
  */
 ResultCode Array_Reserve(Array *arr, size_t new_capacity) {
   /* Step 1: Validate array pointer */
@@ -249,4 +249,31 @@ ResultCode Array_Reserve(Array *arr, size_t new_capacity) {
   arr->capacity = new_capacity;
 
   return kSuccess;
+}
+
+/**
+ * Array_ShrinkToFit - Reduces capacity to exactly match size
+ *
+ * Frees any unused memory - Useful when the array has grows large
+ * but then many elements were removed
+ *
+ * @param arr Array to shrink
+ * @return Result code
+ *
+ * @complexity O(n) where i is the number of elements
+ */
+
+ResultCode Array_ShrinkToFit(Array *arr) {
+  /* Step 1: Validate arr pointer */
+  if (arr == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: No need shirnk if already at minumum */
+  if (arr->size == arr->capacity) {
+    return kSuccess;
+  }
+
+  /* Step 3: Reverse with capacity = size */
+  return Array_Reserve(arr, arr->size);
 }
