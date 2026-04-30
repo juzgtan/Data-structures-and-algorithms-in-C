@@ -1,5 +1,6 @@
 #include "data_structures/array/array.h"
 #include "utils/result_code.h"
+#include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -536,6 +537,72 @@ ResultCode Array_PopBack(Array *arr) {
    * It will be overwrite on next push
    */
   arr->size--;
+
+  return kSuccess;
+}
+
+/**
+ * Array_Insert - Inserts an element at the specified index
+ *
+ * Implementation flow:
+ * 1. Valudate parameters
+ * 2. Check index is valid (0 <= index <= size)
+ * 3. Ensure capacity for one more element
+ * 4. Shift elements to the right (from index to end)
+ * 5. Copy new value into the vatated position
+ * 6. Increment size
+ *
+ * SPECICAL CASES:
+ * - index == size -> same as Push_Back (no shifting needed)
+ * - index == 0    -> insert at begining (shif all elements)
+ * - index  > size -> error
+ *
+ * EXAMPLE: (insert at index = 2, size = 5)
+ * Before: [0] [1] [2] [3] [4]
+ * After : [0] [1] [NEW] [2] [3] [4]
+ * Shift : [2] [3] [4] to positions [3] [4] [5]
+ *
+ * @param arr Array to modify
+ * @param index Position to insert at (0 <= index <= size)
+ * @param value Pointer to value to insert
+ *
+ * @complexity O(n) - where n = size - index
+ */
+
+ResultCode Array_Insert(Array *arr, size_t index, const void *value) {
+  /* Step 1: Validate parameters */
+  if (arr == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds (index can be equal size of append) */
+  if (index > arr->size) {
+    return kInvalidIndex;
+  }
+
+  /* Step 3: Ensure capacity for one more element */
+  ResultCode rc = _ensure_capacity(arr, 1);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 4: Shift elements to the right (if not inserting at end)
+   * memmove is used instead of memcpy because source and destination overlap
+   */
+
+  if (index < arr->size) {
+    void *dest = (char *)arr->data + (index + 1) * arr->size;
+    void *src = (char *)arr->data + index * arr->size;
+    size_t bytes_to_more = (arr->size - index) * arr->item_size;
+    memmove(dest, src, bytes_to_more);
+  }
+
+  /* Step 5: Copy new value into position */
+  void *pos = (char *)arr->data + index * arr->item_size;
+  memcpy(pos, value, arr->item_size);
+
+  /* Step 6: Increment size */
+  arr->size++;
 
   return kSuccess;
 }
