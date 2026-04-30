@@ -387,3 +387,23 @@ ResultCode Array_Set(Array *arr, size_t index, const void *value) {
 
   return kSuccess;
 }
+
+/**
+ * Array_GetUnchecked - Fast, unsafe element access (no bounds checking)
+ *
+ * WARNING: Use only when index is GUARANTEED to be valid.
+ * No validation is performed - results in undefined behavior if index is
+ * invalid.
+ *
+ * Use case: Performance-critical loops where index is already validated.
+ *
+ * @param arr Array to access (assumed non-NULL)
+ * @param index Element index (assumed valid)
+ * @return Pointer to element
+ *
+ * @complexity O(1)
+ */
+void *Array_GetUnchecked(const Array *arr, size_t index) {
+  /* NO CHECKS - UNSAFE! Use with extreme caution */
+  return (char *)arr->data + index * arr->item_size;
+}
