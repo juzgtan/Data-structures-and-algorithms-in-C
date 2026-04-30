@@ -2,6 +2,7 @@
 #include "utils/result_code.h"
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* ============================================================================
  * INTERNAL HELPER FUNCTIONS (Private - not exposed in header)
@@ -345,6 +346,44 @@ ResultCode Array_Get(const Array *arr, size_t index, const void **out) {
    * Use char* pointer arithimetic (sizeof(char) = 1)
    */
   *out = (const char *)arr->data + index * arr->item_size;
+
+  return kSuccess;
+}
+
+/**
+ * Array_Set - Assigns a valude to element at index
+ *
+ * Implementation flow:
+ * 1. Validate array and value not NULL
+ * 2. Check index is within bounds
+ * 3. Copy value into the array's data buffer
+ *
+ * @param arr Array to modify
+ * @param index Element index (0-based)
+ * @param value Pointer to value to copy
+ * @return Result code
+ *
+ * @complexity O(1)
+ */
+
+ResultCode Array_Set(Array *arr, size_t index, const void *value) {
+  /* Step 1: Validate parameters */
+  if (arr == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds */
+  ResultCode rc = _check_index(arr, index);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Copy value into array
+   * Caculae destination address: data + index * item size
+   * Use memcpy for byte-by-byte copy
+   */
+  void *dest = (char *)arr->data + index * arr->item_size;
+  memcpy(dest, value, arr->item_size);
 
   return kSuccess;
 }
