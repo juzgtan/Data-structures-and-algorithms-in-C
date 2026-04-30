@@ -309,3 +309,42 @@ void *Array_Data(Array *arr) { return arr == NULL ? NULL : arr->data; }
 const void *Array_Dataconst(Array *arr) {
   return arr == NULL ? NULL : arr->data;
 }
+
+/**
+ * Array_Get - Safety retrieves a pointer to element at index
+ *
+ * Implement flow:
+ * 1. Validate array and output pointer not NULL
+ * 2. Check index is within bounds
+ * 3: Caculate address and assign to output
+ *
+ * Note: out is const void** to prevent modification through this pointer
+ *
+ * @param arr Array to access
+ * @param index Element index (0-based)
+ * @param out Output pointer to receive element address
+ * @return Result code
+ *
+ * @complexity O(1)
+ */
+
+ResultCode Array_Get(const Array *arr, size_t index, const void **out) {
+  /* Step1: Validate parameters */
+  if (arr == NULL || out == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds */
+  ResultCode rc = _check_index(arr, index);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Caculate address and assign
+   * Address = data + index * item_size
+   * Use char* pointer arithimetic (sizeof(char) = 1)
+   */
+  *out = (const char *)arr->data + index * arr->item_size;
+
+  return kSuccess;
+}
