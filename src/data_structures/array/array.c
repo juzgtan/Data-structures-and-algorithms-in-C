@@ -260,7 +260,7 @@ ResultCode Array_Reserve(Array *arr, size_t new_capacity) {
  * @param arr Array to shrink
  * @return Result code
  *
- * @complexity O(n) where i is the number of elements
+ * @complexity O(n) where n is the number of elements
  */
 
 ResultCode Array_ShrinkToFit(Array *arr) {
@@ -276,4 +276,36 @@ ResultCode Array_ShrinkToFit(Array *arr) {
 
   /* Step 3: Reverse with capacity = size */
   return Array_Reserve(arr, arr->size);
+}
+
+/* ============================================================================
+ * DATA ACCESS FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * Array_Data - Return raw pointer to internal data (non-const)
+ *
+ * Warning: Return NULL if array is NULL or data is NULL
+ * Caller must ensure safe usage of this pointer
+ *
+ * @param arr Array to ACCESS
+ * @return Pointer to data buffer (NULL if arr is NULL)
+ *
+ * @complexity 0(1)
+ */
+
+void *Array_Data(Array *arr) { return arr == NULL ? NULL : arr->data; }
+
+/**
+ * Array_DataConst - Return const pointer to internal data (read-only)
+ *
+ * @param arr Array to access
+ * @return Const pointer to data buffer (NULL if arr is NULL)
+ *
+ * @complexity O(1)
+ */
+
+const void *Array_Dataconst(Array *arr) {
+  return arr == NULL ? NULL : arr->data;
 }
