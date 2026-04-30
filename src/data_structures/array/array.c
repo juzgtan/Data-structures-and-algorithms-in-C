@@ -502,3 +502,40 @@ ResultCode Array_PushBack(Array *arr, const void *value) {
 
   return kSuccess;
 }
+
+/**
+ * Array_PopBack - Removes the last element from the array
+ *
+ * Implementation flow:
+ * 1. Validate array not NULL
+ * 2. Check array is emplty
+ * 3. Decrement size
+ *
+ * NOTE: Does NOT free memory or clear the removed element.
+ * The memory will be overwrite on next push.
+ *
+ * @param arr Array to modify
+ * @result Result code
+ *
+ * @complexity O(1)
+ */
+
+ResultCode Array_PopBack(Array *arr) {
+  /* Step 1: Validate parameter */
+  if (arr == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check array not empty */
+  if (arr->size == 0) {
+    return kEmpty;
+  }
+
+  /* Step 3: Decrement size
+   * The element is logical removed but still exists in memory
+   * It will be overwrite on next push
+   */
+  arr->size--;
+
+  return kSuccess;
+}
