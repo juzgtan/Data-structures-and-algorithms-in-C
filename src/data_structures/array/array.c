@@ -36,6 +36,56 @@ static ResultCode _check_index(const Array *arr, size_t index) {
   return kSuccess;
 }
 
+/**
+ * @brief Ensures the array has enough capacity for 'needed' new elements
+ * @param arr Array to check
+ * @param needed Number of additional element needed
+ * @return Result code
+ *
+ * Growth strategy:
+ * - If capacity = 0 -> grow to 16 (initial capacity)
+ * - Otherwise -> double the capacity (growth factor = 2)
+ * - Check for overflow before each multiplication
+ *
+ * Cases handled:
+ * - arr == NULL -> kNullParameter
+ * - Already enough capacity -> kSuccess
+ * - Overflow during multiplication -> kArithmeticOverflow
+ * - Array_Reserve failue -> propagate error
+ */
+
+static ResultCode _ensure_capacity(Array *arr, size_t needed) {
+  /* Step 1: Validate array pointer */
+  if (arr == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Case 1 - Already enough capacity */
+  if (arr->size + needed <= arr->capacity) {
+    return kSuccess;
+  }
+
+  /* Step 3: Case 2 - Need more capacity - caculate new capacity */
+  size_t new_capacity = arr->capacity == 0 ? 16 : arr->capacity;
+
+  /* Step 4: Double until enough (but check overflow eatch time)
+   * Example: - Current capacity = 8, need = 20 elements
+   * - new_capacity = 8  ->  8 < 20 -> double to 16 (check overflow)
+   * - new_capacity = 16 -> 16 < 20 -> double to 16 (check overflow)
+   * - new_capacity = 32 -> 32 > 20 -> stop
+   */
+  while (new_capacity < arr->size + needed) {
+    /* Prevent overflow: new_capacity * 2 would exceed SIZE_MAX */
+    if (new_capacity > SIZE_MAX / 2) {
+      return kArithmeticOverflow;
+    }
+    new_capacity *= 2;
+  }
+
+  /* Step 5: Case 3 - Let Array_Reserve handle the actial memory allocation */
+  return Array_Reserve(arr, new_capacity);
+}
+
 /* ===========================================================================
  * LIFECYCLE FUNCTIONS
  * ===========================================================================
@@ -209,10 +259,10 @@ bool Array_IsEmpty(const Array *arr) { return arr == NULL ? true : arr->size; }
  * 6: Update capacity on success
  *
  * @param arr Array to modify
- * param new_capacity Desired capacity
+ * @param new_capacity Desired capacity
  * @return Return Result Code
  *
- * complexity O(n) where n is the number of elements (due to reallocation)
+ * @complexity O(n) where n is the number of elements (due to reallocation)
  */
 ResultCode Array_Reserve(Array *arr, size_t new_capacity) {
   /* Step 1: Validate array pointer */
@@ -379,7 +429,7 @@ ResultCode Array_Set(Array *arr, size_t index, const void *value) {
   }
 
   /* Step 3: Copy value into array
-   * Caculae destination address: data + index * item size
+   * Caculate destination address: data + index * item size
    * Use memcpy for byte-by-byte copy
    */
   void *dest = (char *)arr->data + index * arr->item_size;
@@ -406,4 +456,49 @@ ResultCode Array_Set(Array *arr, size_t index, const void *value) {
 void *Array_GetUnchecked(const Array *arr, size_t index) {
   /* NO CHECKS - UNSAFE! Use with extreme caution */
   return (char *)arr->data + index * arr->item_size;
+}
+
+/* ============================================================================
+ * MODIFIER FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * Array_PushBack - Appends an element to the end of the array
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Ensure enough capacity (grow if needed)
+ * 3. Copy value to the end
+ * 4. Increment size
+ *
+ * @param arr Array to modify
+ * @param value Pointer to value to Appends
+ * @result Result code
+ *
+ * @complexity O(1)
+ */
+
+ResultCode Array_PushBack(Array *arr, const void *value) {
+  /* Step 1: Validate parameters */
+  if (arr == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Ensure capacity for one more element */
+  ResultCode rc = _ensure_capacity(arr, 1);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Copy value to the end
+   * Destination = data + size * item_size (right after last element)
+   */
+  void *dest = (char *)arr->data + arr->size * arr->item_size;
+  memcpy(dest, value, arr->item_size);
+
+  /* Step 4: Increment size */
+  arr->size++;
+
+  return kSuccess;
 }
