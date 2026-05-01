@@ -17,9 +17,9 @@
  * @return kSuccess if valid, appropriate error code otherwise
  *
  * Cases handled:
- * - arr == NULL -> kNullParameter
+ * - arr == NULL   -> kNullParameter
  * - index >= size -> kInvalidIndex
- * - otherwise -> kSuccess
+ * - otherwise     -> kSuccess
  */
 
 static ResultCode _check_index(const Array *arr, size_t index) {
@@ -45,14 +45,14 @@ static ResultCode _check_index(const Array *arr, size_t index) {
  *
  * Growth strategy:
  * - If capacity = 0 -> grow to 16 (initial capacity)
- * - Otherwise -> double the capacity (growth factor = 2)
+ * - Otherwise       -> double the capacity (growth factor = 2)
  * - Check for overflow before each multiplication
  *
  * Cases handled:
- * - arr == NULL -> kNullParameter
- * - Already enough capacity -> kSuccess
+ * - arr == NULL                    -> kNullParameter
+ * - Already enough capacity        -> kSuccess
  * - Overflow during multiplication -> kArithmeticOverflow
- * - Array_Reserve failue -> propagate error
+ * - Array_Reserve failue           -> propagate error
  */
 
 static ResultCode _ensure_capacity(Array *arr, size_t needed) {
@@ -109,7 +109,7 @@ static ResultCode _ensure_capacity(Array *arr, size_t needed) {
  * @param result Output pointer to receive the new array
  * @return Result code
  *
- * @complecity )(1)
+ * @complexity O(1)
  */
 
 ResultCode Array_Create(size_t item_size, Array **result) {
@@ -129,13 +129,13 @@ ResultCode Array_Create(size_t item_size, Array **result) {
   }
 
   /* Step 4: Check output pointer is not already poiting to valid memory
-   * This prement memory leak if caller passer an already allocated pointer
+   * This prevent memory leak if caller passer an already allocated pointer
    */
   if (*result != NULL) {
     return kOutputPointerIsNotNull;
   }
 
-  /* Step 5: Alloate Array struct */
+  /* Step 5: Allocate Array struct */
   Array *arr = (Array *)malloc(sizeof(Array));
   if (arr == NULL) {
     return kFailedMemoryAllocation;
@@ -178,7 +178,7 @@ ResultCode Array_Create(size_t item_size, Array **result) {
  *
  * @param arr Array to destroy (can be NULL)
  *
- * @complexity (O(1))
+ * @complexity O(1)
  */
 
 void Array_Destroy(Array *arr) {
@@ -210,7 +210,7 @@ void Array_Destroy(Array *arr) {
  *
  * @param arr Array to clean
  *
- * @complexitIy(01)
+ * @complexity O(1)
  */
 void Array_Clear(Array *arr) {
   if (arr != NULL) {
@@ -226,7 +226,7 @@ void Array_Clear(Array *arr) {
  * Array_Size - Return numbers of elements current in the array
  * Return 0 if array is NULL (safe behavior)
  *
- * @complecity O(1)
+ * @complexity O(1)
  */
 size_t Array_Size(const Array *arr) { return arr == NULL ? 0 : arr->size; }
 
@@ -234,7 +234,7 @@ size_t Array_Size(const Array *arr) { return arr == NULL ? 0 : arr->size; }
  * Array_Capacity - Return the current capacity
  * Return 0 if array is NULL
  *
- * @complecity O(1)
+ * @complexity O(1)
  */
 size_t Array_Capacity(const Array *arr) {
   return arr == NULL ? 0 : arr->capacity;
@@ -244,7 +244,7 @@ size_t Array_Capacity(const Array *arr) {
  * Array_IsEmpty - Check if array contains any elements
  * Return true is array is NULL or Array_IsEmpty
  *
- * @complecity O(1)
+ * @complexity O(1)
  */
 bool Array_IsEmpty(const Array *arr) { return arr == NULL ? true : arr->size; }
 
@@ -594,6 +594,7 @@ ResultCode Array_Insert(Array *arr, size_t index, const void *value) {
     void *dest = (char *)arr->data + (index + 1) * arr->size;
     void *src = (char *)arr->data + index * arr->size;
     size_t bytes_to_more = (arr->size - index) * arr->item_size;
+
     memmove(dest, src, bytes_to_more);
   }
 
@@ -603,6 +604,58 @@ ResultCode Array_Insert(Array *arr, size_t index, const void *value) {
 
   /* Step 6: Increment size */
   arr->size++;
+
+  return kSuccess;
+}
+
+/**
+ * Array_Remove - Removes an elements at the specified index
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check index is valid ( 0 <= index <= size )
+ * 3. Shift elements to the left (from index + 1 to end )
+ * 4. Decrement size
+ *
+ * SPECIAL CASES:
+ * - index == size - 1 -> same as PopBack (no shifting needed)
+ * - index == 0        -> remove first element (shift all remaining)
+ *
+ * EXAMPLE: (remove at index = 2, size = 5)
+ * Before: [0] [1] [2] [3] [4]
+ * After : [0] [1]     [3] [4]
+ * Shift : [3] [4] to positions [2] [3] -> [0] [1] [2] [3]
+ *
+ * @param arr Array to modify
+ * @param index Position to remove ( 0 <= index <= size)
+ * @return Result code
+ *
+ * @complexity O(n) where n = size - index - 1
+ */
+
+ResultCode Array_Remove(Array *arr, size_t index) {
+  /* Step 1: Validate paramenter */
+  if (arr == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds */
+  ResultCode rc = _check_index(arr, index);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Shift elements to the left (if not removing last element) */
+  if (index < arr->size - 1) {
+    void *dest = (char *)arr->data + index * arr->item_size;
+    void *src = (char *)arr->data + (index + 1) * arr->item_size;
+    size_t bytes_to_move = (arr->size - index - 1) * arr->item_size;
+
+    memmove(dest, src, bytes_to_move);
+  }
+
+  /* Step 4: Decrement size */
+  arr->size--;
 
   return kSuccess;
 }
