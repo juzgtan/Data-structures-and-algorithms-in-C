@@ -1,5 +1,6 @@
 #include "data_structures/linked_list/singly_linked_list.h"
 #include "result_code.h"
+#include <stdbool.h>
 #include <stdlib.h>
 
 /* ============================================================================
@@ -182,7 +183,7 @@ void SinglyLinkedList_Destroy(SinglyLinkedList *list) {
 /** SinglyLinkedList_Clear - Remove all nodes from the list
  *
  * Implementation flow:
- * 1. Check if list is NULL (silently return
+ * 1. Check if list is NULL (silently return)
  * 2. Traverse from head, freeing earch node
  * 3. Reset head, tail, and size to initial state
  *
@@ -194,7 +195,7 @@ void SinglyLinkedList_Clear(SinglyLinkedList *list) {
   if (list == NULL) {
     return;
   }
-  /* Step 2: Traversa and free all nodes
+  /* Step 2: Traverse and free all nodes
    * EXAMPLE: head -> A -> B -> C -> NULL
    * Iter 1: current = A , next = B, free(A)
    * Iter 2: current = B, next = C, free(B)
@@ -212,4 +213,28 @@ void SinglyLinkedList_Clear(SinglyLinkedList *list) {
   list->size = 0;
   list->head = NULL;
   list->tail = NULL;
+}
+
+/* ============================================================================
+ * CAPACITY FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * SinglyLinkedList_Size - Returns the number of elements in the list
+ * Return 0 if list is NULL (safe behavior)
+ * @complexity O(1)
+ */
+size_t SinglyLinkedList_Size(const SinglyLinkedList *list) {
+  return list == NULL ? 0 : list->size;
+}
+
+/**
+ * SinglyLinkedList_IsEmpty - Checks if the list contains any elements
+ * Returns true if the list is NULL or contains no elements (size == 0),
+ * otherwise returns false.
+ * @complexity O(1)
+ */
+bool SinglyLinkedList_IsEmpty(const SinglyLinkedList *list) {
+  return list == NULL ? true : list->size == 0;
 }
