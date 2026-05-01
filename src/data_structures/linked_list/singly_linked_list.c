@@ -54,7 +54,6 @@ static SListNode *_create_node(void *data) {
  *
  * @complexity O(n) worst case and O(index) average
  */
-
 static ResultCode _get_node_at(const SinglyLinkedList *list, size_t index,
                                SListNode **out_node) {
   /* Step 1: Validate parameters */
@@ -75,6 +74,30 @@ static ResultCode _get_node_at(const SinglyLinkedList *list, size_t index,
 
   /* Step 4: Set output and return */
   *out_node = current;
+
+  return kSuccess;
+}
+
+/**
+ * @brief Validates that the list is not empty
+ * @param list Singly linked list to check
+ * @return Result code
+ *
+ * CASES HANDLED:
+ * - list == NULL -> kNullParameter
+ * - size == 0    -> kEmpty
+ * - otherwise    -> kSuccess
+ *
+ * @complexity O(1)
+ */
+static ResultCode _check_not_empty(const SinglyLinkedList *list) {
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  if (list->size == 0) {
+    return kEmpty;
+  }
 
   return kSuccess;
 }
