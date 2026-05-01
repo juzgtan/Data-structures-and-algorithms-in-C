@@ -154,3 +154,62 @@ ResultCode SinglyLinkedList_Create(SinglyLinkedList **result) {
   *result = list;
   return kSuccess;
 }
+
+/**
+ * SinglyLinkedList_Destroy - Frees all memory associated with the list
+ *
+ * Implementation flow:
+ * 1. Check if list is NULL (silently return)
+ * 2. Clear all nodes (reuse SinglyLinkedList_Clear logic)
+ * 3. Free the SinglyLinkedList struct ifself
+ *
+ * @param list Singly linked list to destroy (can be NULL)
+ * @complexity O(n)
+ */
+void SinglyLinkedList_Destroy(SinglyLinkedList *list) {
+  /* Step 1: Handle NULL gracefully */
+  if (list == NULL) {
+    return;
+  }
+
+  /* Step 2: Clear all nodes (frees all node memory) */
+  SinglyLinkedList_Clear(list);
+
+  /* Step 3: Free struct ifselt */
+  free(list);
+}
+
+/** SinglyLinkedList_Clear - Remove all nodes from the list
+ *
+ * Implementation flow:
+ * 1. Check if list is NULL (silently return
+ * 2. Traverse from head, freeing earch node
+ * 3. Reset head, tail, and size to initial state
+ *
+ * @param list Singly linked list to clear
+ * @complexity O(n)
+ */
+void SinglyLinkedList_Clear(SinglyLinkedList *list) {
+  /* Step 1: Handle NULL gracefully */
+  if (list == NULL) {
+    return;
+  }
+  /* Step 2: Traversa and free all nodes
+   * EXAMPLE: head -> A -> B -> C -> NULL
+   * Iter 1: current = A , next = B, free(A)
+   * Iter 2: current = B, next = C, free(B)
+   * Iter 3: current = C, next = NULL, free(C)
+   * Done.
+   */
+  SListNode *current = list->head;
+  while (current != NULL) {
+    SListNode *next = current->next; /* Save next before feeing current */
+    free(current);                   /* Free current node */
+    current = next;                  /* Move to next node */
+  }
+
+  /* Step 3: Reset list to empty state */
+  list->size = 0;
+  list->head = NULL;
+  list->tail = NULL;
+}
