@@ -101,3 +101,56 @@ static ResultCode _check_not_empty(const SinglyLinkedList *list) {
 
   return kSuccess;
 }
+
+/* ============================================================================
+ * LIFECYCLE FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * SinglyLinkedList_Create - Creates a new empty singly linked list
+ *
+ * Implementation flow:
+ * 1. Set output pointer to NULL (safety first)
+ * 2. Validate output parameter not NULL
+ * 3. Check output pointer is not poiting to valid memory (prement leak)
+ * 4. Allocate SinglyLinkedList struct
+ * 5. Initialize fields to empty state
+ * 6. Assign result and return success
+ *
+ * @param result Output pointer to retrieve the new SinglyLinkedList
+ * @return Result code
+ *
+ * complexity O(1)
+ */
+ResultCode SinglyLinkedList_Create(SinglyLinkedList **result) {
+  /* Step 1: Alway set output to NULL first */
+  if (result != NULL) {
+    *result = NULL;
+  }
+
+  /* Step 2: Validate output paramenter */
+  if (result == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 3: Check putput pointer is not already poiting to valid memory
+   * This prevents memory leak if caller passes an already-allocated pointer */
+  if (*result != NULL) {
+    return kOutputPointerIsNotNull;
+  }
+
+  /* Step 4: Allocate SinglyLinkedList struct */
+  SinglyLinkedList *list = (SinglyLinkedList *)malloc(sizeof(SinglyLinkedList));
+  if (list == NULL) {
+    return kFailedMemoryAllocation;
+  }
+  /* Step 5: Initialize fields to empty state */
+  list->size = 0;    /* No elements initially */
+  list->head = NULL; /* Head points to nothing */
+  list->tail = NULL; /* Tail points to nothing */
+
+  /* Step 6: Success - Set output and return */
+  *result = list;
+  return kSuccess;
+}
