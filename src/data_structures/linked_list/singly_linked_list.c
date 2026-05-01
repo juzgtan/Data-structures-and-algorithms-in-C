@@ -160,10 +160,11 @@ ResultCode SinglyLinkedList_Create(SinglyLinkedList **result) {
  * SinglyLinkedList_Destroy - Frees all memory associated with the list
  *
  * Implementation flow:
- * 1. Check if list is NULL (silently return)
- * 2. Clear all nodes (reuse SinglyLinkedList_Clear logic)
- * 3. Free the SinglyLinkedList struct ifself
+ * 1. Handle NULL input gracefully (no operation)
+ * 2. Remove and free all nodes in the list
+ * 3. Free the SinglyLinkedList structure itself
  *
+ * @note After this call, the list pointer becomes invalid
  * @param list Singly linked list to destroy (can be NULL)
  * @complexity O(n)
  */
