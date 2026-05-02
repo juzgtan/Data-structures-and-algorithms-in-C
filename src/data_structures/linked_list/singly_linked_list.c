@@ -631,3 +631,64 @@ ResultCode SinglyLinkedList_InsertAt(SinglyLinkedList *list, size_t index,
 
   return kSuccess;
 }
+
+/**
+ * SinglyLinkedList_RemoveAt - Remove an element at the specified index
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check index bounds
+ * 3. Handle special case (front)
+ * 4. For middle/back removal, find node before removal point
+ * 5. Unlink and free target node
+ * 6. Update tail if removing last element
+ * 7. Decrement size
+ *
+ * EXAMPLE: (remove at index = 2, list size = 5)
+ * Before: [0]->[1]->[2]->[3][4]->NULL
+ * After RemoveAt(2): [0]->[1]->[3]->[4]->NULL
+ *
+ * @param list Singly linked list to modify
+ * @param index Position to remove (0 <= index <= size)
+ * @return Result code
+ *@complexity O(n) - in worse case
+ */
+ResultCode SinglyLinkedList_RemoveAt(SinglyLinkedList *list, size_t index) {
+  /* Step 1: Validate parameters */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds */
+  if (index > list->size) {
+    return kInvalidIndex;
+  }
+
+  /* Step 3: Handle specific case for efficienly */
+  if (index == 0) {
+    /* Remove first element */
+    return SinglyLinkedList_PopFront(list);
+  }
+
+  /* Step 4: Find node before the one node to remove */
+  SListNode *prev;
+  ResultCode rc = _get_node_at(list, index - 1, &prev);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 5: Remove node */
+  SListNode *to_remove = prev->next;
+  prev->next = to_remove->next;
+
+  /* Step 6: Update tail if removing last node */
+  if (to_remove->next == list->tail) {
+    to_remove->next = prev;
+  }
+
+  /* Step 7: Free removed node and decrement size */
+  free(to_remove);
+  list->size--;
+
+  return kSuccess;
+}
