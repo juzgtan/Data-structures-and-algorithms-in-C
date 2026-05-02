@@ -444,3 +444,57 @@ ResultCode SinglyLinkedList_PushBack(SinglyLinkedList *list, void *value) {
 
   return kSuccess;
 }
+
+/**
+ * SinglyLinkedList_PopFront - Removes first element from the list
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check list is not empty
+ * 3. Save old head node
+ * 4. Update to next node
+ * 5. Handle single-element list case
+ * 6. Free old head node
+ * 7. Decrement size
+ *
+ * EXAMPLE:
+ * Before: head -> A -> B -> C -> NULL
+ * After: PopFront(A): head -> B -> C -> NULL, A is freed
+ *
+ * @param list Singly linked list to modify
+ * @return Result code
+ * @complexity O(1)
+ */
+ResultCode SinglyLinkedList_PopFront(SinglyLinkedList *list) {
+  /* Step 1: Validate parameters */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Save old head node */
+  SListNode *old_node = list->head;
+
+  /* Step 4: Update head node to nex node */
+  list->head = list->head->next;
+
+  /* Step 5: Handler-single element list case
+   * If list becomes empty after removal, tail must also be NULL
+   */
+  if (list->head == NULL) {
+    list->tail = NULL; /* List is now empty */
+  }
+
+  /* Free old head node */
+  free(old_node);
+
+  /* Step 7: Decrement size */
+  list->size--;
+
+  return kSuccess;
+}
