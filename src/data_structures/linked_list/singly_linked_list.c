@@ -651,7 +651,7 @@ ResultCode SinglyLinkedList_InsertAt(SinglyLinkedList *list, size_t index,
  * @param list Singly linked list to modify
  * @param index Position to remove (0 <= index <= size)
  * @return Result code
- *@complexity O(n) - in worse case
+ * @complexity O(n) - in worse case
  */
 ResultCode SinglyLinkedList_RemoveAt(SinglyLinkedList *list, size_t index) {
   /* Step 1: Validate parameters */
@@ -689,6 +689,73 @@ ResultCode SinglyLinkedList_RemoveAt(SinglyLinkedList *list, size_t index) {
   /* Step 7: Free removed node and decrement size */
   free(to_remove);
   list->size--;
+
+  return kSuccess;
+}
+
+/* ============================================================================
+ * ADVANCED OPERATIONS
+ * ============================================================================
+ */
+
+/**
+ * SinglyLinkedList_Reverse - Reverse list in-place
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check list not empty
+ * 3. Initialize three pointer: prev, current, next
+ * 4. Traverse list, reversing each node's next pointer
+ * 5. Update head and tail
+ *
+ * EXAMPLE:
+ * Before: head->1->2->3->4->NULL
+ * After:  head->4->3->2->1->NULL
+ *
+ * ALGORITHM:
+ * - prev starts as NULL
+ * - current starts as head
+ * - For each node: save next, reverse current->next to prev, move forward
+ *
+ * @param list Singly linked list to reverse
+ * @return Result code
+ * @complexity O(n)
+ */
+ResultCode SinglyLinkedList_Reverse(SinglyLinkedList *list) {
+  /* Step 1: Validate parameter */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Intialize pointers
+   * prev   : Node will become previous node
+   * current: Node being processed
+   * next   : Temporary storage for the next node
+   */
+  SListNode *prev = NULL;
+  SListNode *current = list->head;
+  SListNode *next = NULL;
+
+  /* Step 4: Update tail to old head ( will become last node after reversal)*/
+  list->tail = list->head;
+
+  /* Step 5: Reverse each node's next pointer
+   * For each node, we point it to previous node insteaed of the next */
+  while (current != NULL) {
+    next = current->next; /* Save next node */
+    current->next = prev; /* Reverse link */
+    prev = current;       /* Move prev forward */
+    current = next;       /* Move current forward */
+  }
+
+  /* Step 6: Update head to the last node (prev now points to old node) */
+  list->head = prev;
 
   return kSuccess;
 }
