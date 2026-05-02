@@ -239,3 +239,41 @@ size_t SinglyLinkedList_Size(const SinglyLinkedList *list) {
 bool SinglyLinkedList_IsEmpty(const SinglyLinkedList *list) {
   return list == NULL ? true : list->size == 0;
 }
+
+/* ============================================================================
+ * DATA ACCESS FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * SinglyLinkedList_Front - Return the first element without removing it
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check list is not empty
+ * 3. Retrieve data from head node
+ * 4. Set output pointer
+ *
+ * @param list Singly linked list to access
+ * @param out_value Output pointer to receive front value
+ * @return Result code
+ * @complexity O(1)
+ */
+ResultCode SinglyLinkedList_Front(const SinglyLinkedList *list,
+                                  void **out_value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check if list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Retrieve data fromt head node */
+  *out_value = list->head;
+
+  return kSuccess;
+}
