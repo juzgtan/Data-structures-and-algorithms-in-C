@@ -759,3 +759,57 @@ ResultCode SinglyLinkedList_Reverse(SinglyLinkedList *list) {
 
   return kSuccess;
 }
+
+/**
+ * SinglyLinkedList_FindMiddle - Finds the middle node (slow/fast pointer)
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check list not empty
+ * 3. Initialize slow and fast pointers at head
+ * 4. Move slow 1 step, fast 2 steps until fast reaches end
+ * 5. Slow will be at middle
+ *
+ * ALGORITHM EXPLANATION:
+ * - slow moves one node at a time
+ * - fast moves two nodes at a time
+ * - When fast reaches the end, slow is at the middle
+ * - For even-sized lists returns the first middle node
+ *
+ * @param list Singly linked list to examine
+ * @param out_value Output pointer to receive middle node's data
+ * @return Return code
+ * @complexity O(n)
+ */
+ResultCode SinglyLinkedList_FindMiddle(const SinglyLinkedList *list,
+                                       void **out_value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Initialize slow and fast pointers
+   * Both start at head node */
+
+  SListNode *slow = list->head;
+  SListNode *fast = list->head;
+
+  /* Step 4: Traverse with slow and fast pointers
+   * slow moves 1 step, fast move 2 steps
+   * When fast reaches end, slow os at middle */
+  while (fast != NULL && fast->next != NULL) {
+    slow = slow->next;       /* Move slow one step */
+    fast = fast->next->next; /* Move fast two steps */
+  }
+
+  /* Step 5: Return middle node's data */
+  *out_value = slow->data;
+
+  return kSuccess;
+}
