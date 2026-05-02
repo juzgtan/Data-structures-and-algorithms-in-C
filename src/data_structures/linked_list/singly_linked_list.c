@@ -277,3 +277,37 @@ ResultCode SinglyLinkedList_Front(const SinglyLinkedList *list,
 
   return kSuccess;
 }
+
+/**
+ * SinglyLinkedList_Back - Returns the last element without removing it
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check list is not empty
+ * 3. Retrieve data from tail node
+ * 4. Set output pointer
+ *
+ * @param list Singly linked list to access
+ * @param out_value Output pointer to recieve back value
+ * @return Result code
+ *
+ * @complexity O(1) - (Due to tail pointer)
+ */
+ResultCode SinglyLinkedList_Back(const SinglyLinkedList *list,
+                                 void **out_value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Retrieve data from tail node */
+  *out_value = list->tail;
+
+  return kSuccess;
+}
