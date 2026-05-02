@@ -345,3 +345,54 @@ ResultCode SinglyLinkedList_GetAt(const SinglyLinkedList *list, size_t index,
 
   return kSuccess;
 }
+
+/* ============================================================================
+ * MODIFIER FUNCTIONS
+ * ============================================================================
+ */
+
+/** SinglyLinkedList_PushFront - Inserts an element at the beginning of the list
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Create new node
+ * 3. Link new node to current head
+ * 4. Update head pointer
+ * 5. Update tail if list was empty
+ * 6. Increment size
+ *
+ * EXAMPLE:
+ * Before: head -> A -> B -> NULL
+ * After PushFront: head -> C -> A -> B -> NULL
+ *
+ * @param list Singly linked list to modify
+ * @param value Pointer to value to insert
+ * @return Result code
+ * @complexity O(1)
+ */
+ResultCode SinglyLinkedList_PushFront(SinglyLinkedList *list, void *value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Create new node */
+  SListNode *node = _create_node(value);
+  if (node == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 3: Insert at front */
+  node->next = list->head; /* New node points to current head */
+  list->head = node;       /* Head now points to new node */
+
+  /* Step 4: Update tail if list was empty */
+  if (list->tail == NULL) {
+    list->tail = node; /* In empty list, head and tail are same */
+  }
+
+  /* Step 5: Increment size */
+  list->size++;
+
+  return kSuccess;
+}
