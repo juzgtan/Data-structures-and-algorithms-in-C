@@ -1,5 +1,6 @@
 #include "data_structures/linked_list/singly_linked_list.h"
 #include "result_code.h"
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -555,6 +556,78 @@ ResultCode SinglyLinkedList_PopBack(SinglyLinkedList *list) {
 
   /* Step 6: Decrement size */
   list->size--;
+
+  return kSuccess;
+}
+
+/**
+ * SinglyLinkedList_InsertAt - Inserts an element at the specified index
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check index bounds
+ * 3. Handle special cases (front, back)
+ * 4. For middle insertion, find node before insertion point
+ * 5. Create new node and link it
+ * 6. Increment size
+ *
+ * SPECIAL CASES:
+ * - index == 0: same as PushFront
+ * - index == size: same PushBack
+ * - otherwire: insert in middle
+ *
+ * EXAMPLE: (insert at index = 2, list size = 4)
+ * Before: [0]->[1]->[2]->[3]->NULL
+ * After: InsertAt(2, X): [0]->[1]->[X]->[2]->[3]->NULL
+ *
+ * @param list Singly linked list to modify
+ * @param index Position to insert at (0 <= index <= size)
+ * @param value Pointer to value to insert
+ * @result Result code
+ * complexity O(n) - in worse case
+ */
+ResultCode SinglyLinkedList_InsertAt(SinglyLinkedList *list, size_t index,
+                                     void *value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds (index can equal size for append) */
+  if (index > list->size) {
+    return kInvalidIndex;
+  }
+
+  /* Step 3: Handle special cases for efficienly */
+  if (index == 0) {
+    /* Insert at beginning */
+    return SinglyLinkedList_PushFront(list, value);
+  }
+
+  if (index == list->size) {
+    /* Insert at end */
+    return SinglyLinkedList_PushBack(list, value);
+  }
+
+  /* Step 4: Insert in middle - find node before insertion point */
+  SListNode *prev;
+  ResultCode rc = _get_node_at(list, index - 1, &prev);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 5: Create new node */
+  SListNode *node = _create_node(value);
+  if (node == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 6: Link new node betwen prev and prev->next */
+  node->next = prev->next; /* New node pointer to the node affter prev */
+  prev->next = node;       /* Prev now pointer to new node */
+
+  /* Step 7: Increment size */
+  list->size++;
 
   return kSuccess;
 }
