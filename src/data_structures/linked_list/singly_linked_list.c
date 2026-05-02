@@ -311,3 +311,37 @@ ResultCode SinglyLinkedList_Back(const SinglyLinkedList *list,
 
   return kSuccess;
 }
+
+/**
+ * SinglyLinkedList_GetAt - Returns elements at specific index
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Find node at given index
+ * 3. Retrieve data from that node
+ * 4. Set output pointer
+ *
+ * @param list Singly linked list to access
+ * @param index Position to retrieve value
+ * @return Result code
+ * @complexity O(n) - worst case
+ */
+ResultCode SinglyLinkedList_GetAt(const SinglyLinkedList *list, size_t index,
+                                  void **out_value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Find node at index */
+  SListNode *node;
+  ResultCode rc = _get_node_at(list, index, &node);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Retrieve data and return */
+  *out_value = node->data;
+
+  return kSuccess;
+}
