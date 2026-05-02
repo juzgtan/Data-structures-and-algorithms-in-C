@@ -396,3 +396,51 @@ ResultCode SinglyLinkedList_PushFront(SinglyLinkedList *list, void *value) {
 
   return kSuccess;
 }
+
+/**
+ * SinglyLinkedList_PushBack - Inserts an element at the end of the list
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Create new node
+ * 3. Handle empty list case
+ * 4. Handle non-empty list case (append after tail)
+ * 5. Increment size
+ *
+ * EXAMPLE:
+ * Before: head -> A -> B -> NULL, tail -> B
+ * After PushBack(C): head -> A -> B -> C, tail -> C
+ *
+ * @param list Singly linked list to modify
+ * @param value Pointer to value to insert
+ * @result Result code
+ * complexity O(1) - (Due to tail pointer)
+ */
+ResultCode SinglyLinkedList_PushBack(SinglyLinkedList *list, void *value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Create new node */
+  SListNode *node = _create_node(value);
+  if (node == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 3: Insert at black */
+  if (list->tail == NULL) {
+    /* Case 1: Empty list - new node becomes both head and tail */
+    list->head = node;
+    list->tail = node;
+  } else {
+    /* Case 2: Non-empty list - Append after current tail */
+    list->tail->next = node; /* Curent tail points to new node */
+    list->tail = node;       /* Update tail to new node */
+  }
+
+  /* Step 4: Increment size */
+  list->size++;
+
+  return kSuccess;
+}
