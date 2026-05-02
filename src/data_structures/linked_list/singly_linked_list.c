@@ -498,3 +498,63 @@ ResultCode SinglyLinkedList_PopFront(SinglyLinkedList *list) {
 
   return kSuccess;
 }
+
+/**
+ * SinglyLinkedList_PopBack - Removes last element from the list
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check list is not empty
+ * 3. Handle single-element list case
+ * 4. For mutil-element listm find second-to-last node
+ * 5. Free last node and update tail
+ * 6. Decrement size
+ *
+ * EXAMPLE:
+ * Before: head -> A -> B -> C -> NULL, tail -> C
+ * After: PopBack(C): head -> A -> B -> NULL, tail -> B, C is freed
+ *
+ * @param list Singly linked list to modify
+ * @param return Result code
+ * @complexity O(n) - (need to find second-to-last node)
+ */
+ResultCode SinglyLinkedList_PopBack(SinglyLinkedList *list) {
+  /* Step 1: Validate parameters */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Handle single-element list case */
+  if (list->head == list->tail) {
+    /* Only one node - free it and empty list */
+    free(list->head);
+    list->head = NULL;
+    list->tail = NULL;
+    list->size = 0;
+
+    return kSuccess;
+  }
+
+  /* Step 4: Find second-to-last node
+   * Traverse until current->nex is tail */
+  SListNode *current = list->head;
+  while (current->next != list->tail) {
+    current = current->next;
+  }
+
+  /* Step 5: Remove last node */
+  free(list->tail);        /* Free tail node */
+  list->tail = current;    /* New tail is second-to-last */
+  list->tail->next = NULL; /* Terminate list */
+
+  /* Step 6: Decrement size */
+  list->size--;
+
+  return kSuccess;
+}
