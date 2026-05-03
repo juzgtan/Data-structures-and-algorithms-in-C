@@ -802,7 +802,7 @@ ResultCode SinglyLinkedList_FindMiddle(const SinglyLinkedList *list,
 
   /* Step 4: Traverse with slow and fast pointers
    * slow moves 1 step, fast move 2 steps
-   * When fast reaches end, slow os at middle */
+   * When fast reaches end, slow is at middle */
   while (fast != NULL && fast->next != NULL) {
     slow = slow->next;       /* Move slow one step */
     fast = fast->next->next; /* Move fast two steps */
@@ -812,4 +812,46 @@ ResultCode SinglyLinkedList_FindMiddle(const SinglyLinkedList *list,
   *out_value = slow->data;
 
   return kSuccess;
+}
+
+/**
+ * SinglyLinkedList_HasCycle - Detects cycle using Floyd's algorithm
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Initialize slow and fast pointers at head
+ * 3. Move slow 1 step fast 2 steps
+ * 4. If they meet, cycle exists
+ *
+ * ALGORITHM EXPLANATION:
+ * - If there's a cycle, the fast pointer will eventually catch up to the slow
+ * - If there's no cycle, fast will reach NULL
+ *
+ * @param list Singly linked list to check
+ * @param return true if cycle exists, false otherwise
+ * @complexity O(n)
+ */
+bool SinglyLinkedList_HasCycle(const SinglyLinkedList *list) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || list->head == NULL) {
+    return false;
+  }
+
+  /* Step 2: Initialize slow and fast pointers */
+  SListNode *slow = list->head;
+  SListNode *fast = list->head;
+
+  /* Step 3: Floyd's cycle detection algorithm */
+  while (fast != NULL && fast->next != NULL) {
+    slow = slow->next;       /* Move slow one step */
+    fast = fast->next->next; /* Move fast two steps */
+
+    /* Step 4: If they meet, a cycle exists */
+    if (slow == fast) {
+      return true;
+    }
+  }
+
+  /* Step 5: No cycle found */
+  return false;
 }
