@@ -855,3 +855,64 @@ bool SinglyLinkedList_HasCycle(const SinglyLinkedList *list) {
   /* Step 5: No cycle found */
   return false;
 }
+
+/**
+ * SinglyLinkedList_GetNthFromEnd - Finds nth node from end (1-based)
+ *
+ * Implementation flow
+ * 1. Validate parameters
+ * 2. Check n is valid (1 <= n <= size)
+ * 3. Use two-pointer technique:
+ *    - First pointer moves n steps ahead
+ *    - Then both move together until first reachs end
+ *    - Second pointer will be at nth from end
+ *
+ * EXAMPLE: (with n = 2)
+ * List: [1]->[2]->[3]->[4]->[5]->NULL
+ * Step 1: first moves 2 steps -> first at [3]
+ * Step 2: Both move until first reach NULL
+ *         second ends at [4] (2nd from end)
+ *
+ * @param list Singly linked list to examine
+ * @param n Position from end (1 = last element)
+ * @param out_value Output pointer to receive node's data
+ * @param result Result code
+ * complexity O(n)
+ */
+ResultCode SinglyLinkedList_GetNthFromEnd(const SinglyLinkedList *list,
+                                          size_t n, void **out_value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check n is valid */
+  if (n == 0 || n > list->size) {
+    return kInvalidArgument;
+  }
+
+  /* Step 3: Initialize two pointers at head */
+  SListNode *first = list->head;
+  SListNode *second = list->head;
+
+  /* Step 4: Move first pointer n steps ahead */
+  for (size_t i = 0; i < n; i++) {
+    if (first == NULL) {
+      return kNotFound;
+    }
+    first = first->next;
+  }
+
+  /* Step 5: Move both pointers until first reaches ends
+   * When first reaches NULL, second will be at nth from end
+   */
+  while (first != NULL) {
+    first = first->next;
+    second = second->next;
+  }
+
+  /* Step 6: Return data from second pointer */
+  *out_value = second->data;
+
+  return kSuccess;
+}
