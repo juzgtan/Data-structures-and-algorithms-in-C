@@ -971,3 +971,77 @@ ResultCode SinglyLinkedList_RemoveDuplicatesSorted(SinglyLinkedList *list) {
 
   return kSuccess;
 }
+
+/**
+ * SinglyLinkedList_MergeSorted - Merged two sorted lists into one
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Create new empty list for result
+ * 3. Trarvese both lists, adding element to result
+ * 4. Append remaining elements from either list
+ * 5. Clear original lists
+ *
+ * EXAMPLE:
+ * list 1: [1]->[3]->[5]->NULL
+ * list 2: [2]->[4]->[6]->NULL
+ * Result: [1]->[2]->[3]->[4]->[5]->[6]->NULL
+ *
+ * @param list1 First sorted list (will cleared after merge)
+ * @param list2 Second sorted list (will cleared after merge)
+ * @param result Output pointer for merged list
+ * @return Result code
+ * @complexity O(n+ m)
+ */
+ResultCode SinglyLinkedList_MergeSorted(SinglyLinkedList *list1,
+                                        SinglyLinkedList *list2,
+                                        SinglyLinkedList **result) {
+  /* Step 1: Validate parameters */
+  if (list1 == NULL || list2 == NULL || result == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2:  Create new list for merged result */
+  ResultCode rc = SinglyLinkedList_Create(result);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  SinglyLinkedList *merged = *result;
+  SListNode *p1 = list1->head;
+  SListNode *p2 = list2->head;
+
+  /* Step 3: Merge while both lists have nodes
+   * Compare data and add smallr to result
+   */
+
+  while (p1 != NULL && p2 != NULL) {
+    /* Assuming data can be compared directly (pointers)
+     * For custom comparison, would need compare function */
+    if (p1->data <= p2->data) {
+      SinglyLinkedList_PushBack(merged, p1->data);
+      p1 = p1->next;
+    } else {
+      SinglyLinkedList_PushBack(merged, p2->data);
+      p2 = p2->next;
+    }
+  }
+
+  /* Step 4: Append remaining nodes from list1 */
+  while (p1 != NULL) {
+    SinglyLinkedList_PushBack(merged, p1->data);
+    p1 = p1->next;
+  }
+
+  /* Step 5: Append remaining noedes from list2 */
+  while (p2 != NULL) {
+    SinglyLinkedList_PushBack(merged, p2->data);
+    p2 = p2->next;
+  }
+
+  /* Step 6: Clear original lists */
+  SinglyLinkedList_Clear(list1);
+  SinglyLinkedList_Clear(list2);
+
+  return kSuccess;
+}
