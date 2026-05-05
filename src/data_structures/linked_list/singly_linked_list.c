@@ -916,3 +916,58 @@ ResultCode SinglyLinkedList_GetNthFromEnd(const SinglyLinkedList *list,
 
   return kSuccess;
 }
+
+/**
+ * SinglyLinkedList_RemoveDuplicatesSorted - Removes duplicates from sorted list
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Handle lists with < 2 elements (no duplicates possible
+ * 3. Trarvesa list, comparing each node with next
+ * 4. When duplicate found, remove the next node
+ * 5. Update tail if needed
+ *
+ * EXAMPLE:
+ * Before: [1]->[1]->[2]->[3]->[3]->[4]->NULL
+ * After: [1]->[2]->[3]->[4]->NULL
+ *
+ * @param list Singly linked list to modify (must be sorted)
+ * @param return Result coede
+ * @complexity O(n)
+ */
+ResultCode SinglyLinkedList_RemoveDuplicatesSorted(SinglyLinkedList *list) {
+  /* Step2:  Validate parameter */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: No duplicates possible in list with < 2 elememts */
+  if (list->size < 2) {
+    return kSuccess;
+  }
+
+  /* Step 3: Trarvesa and remove duplicates */
+  SListNode *current = list->head;
+  while (current != NULL && current->next != NULL) {
+    /* Compare current node with next node */
+    if (current->data == current->next->data) {
+      /* Duplicate found -> remove next node */
+      SListNode *duplicate = current->next;
+      current->next = duplicate->next;
+
+      /* Update tail if removing last node */
+      if (duplicate == list->tail) {
+        list->tail = current;
+      }
+
+      /* Free duplicate node */
+      free(duplicate);
+      list->size--;
+    } else {
+      /* No duplicate -> move to next node */
+      current = current->next;
+    }
+  }
+
+  return kSuccess;
+}
