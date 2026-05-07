@@ -84,3 +84,34 @@ ResultCode DoublyLinkedList_Create(DoublyLinkedList **result) {
 
   return kSuccess;
 }
+
+/**
+ * DoublyLinkedList_Clear - Removes all nodes from the list
+ *
+ * Implementation flow:
+ * 1. Check if list is NULL (silently return)
+ * 2. Trarvese from head, freeing each node
+ * 3. Reset head, tail, and size to initial state
+ *
+ * @param list Doubly linked list to clear
+ * @complexity O(n)
+ */
+void DoublyLinkedList_Clear(DoublyLinkedList *list) {
+  /* Step 1: Handle NULL gracefully */
+  if (list == NULL) {
+    return;
+  }
+
+  /* Step 2: Trarvese and free all nodes */
+  DListNode *current = list->head;
+  while (current != NULL) {
+    DListNode *next = current->next; /* Save next before freeing current */
+    free(current);                   /* Free current node */
+    current = next;                  /* Move to next node */
+  }
+
+  /* Step 3: Reset list to empty state */
+  list->size = 0;
+  list->head = NULL;
+  list->tail = NULL;
+}
