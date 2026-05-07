@@ -115,3 +115,27 @@ void DoublyLinkedList_Clear(DoublyLinkedList *list) {
   list->head = NULL;
   list->tail = NULL;
 }
+
+/**
+ * DoublyLinkedList_Destroy - Frees all memory associated with the node
+ *
+ * Implementation flow:
+ * 1. Check if list is NULL (silently return)
+ * 2. Clear all nodes
+ * 3. Free DoublyLinkedList struct itself
+ *
+ * @param list Doubly linked list to destroy (can be NULL)
+ * @complexity O(n)
+ */
+void DoublyLinkedList_Destroy(DoublyLinkedList *list) {
+  /* Step 1: Handle NULL gracefully */
+  if (list == NULL) {
+    return;
+  }
+
+  /* Step 2: Clear all node (free all node memory) */
+  DoublyLinkedList_Clear(list);
+
+  /* Step 3: Free struct itself */
+  free(list);
+}
