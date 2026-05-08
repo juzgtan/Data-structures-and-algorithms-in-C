@@ -33,6 +33,31 @@ static DListNode *_create_node(void *data) {
   return node;
 }
 
+/**
+ *
+ * @brief Validates that list not empty
+ * @param list Doubly linked list to check
+ * @return Result code
+ *
+ * Cases handle:
+ * - list == NULL -> kNullParameter
+ * - size == 0    -> kEmpty
+ * - otherwise    -> kSuccess
+ *
+ * @complexity O(1)
+ */
+static ResultCode _check_not_empty(const DoublyLinkedList *list) {
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  if (list->size == 0) {
+    return kEmpty;
+  }
+
+  return kSuccess;
+}
+
 /* ============================================================================
  * LIFECYCLE FUNCTIONS
  * ============================================================================
@@ -161,4 +186,42 @@ size_t DoublyLinkedList_Size(const DoublyLinkedList *list) {
  */
 bool DoublyLinkedList_IsEmpty(const DoublyLinkedList *list) {
   return list == NULL ? true : list->size == 0;
+}
+
+/* ============================================================================
+ * DATA ACCESS FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * DoublyLinkedList_Front - Return the first element without removing it
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check if is not empty
+ * 3. Retrieve data from head node
+ * 4. Set output pointer
+ *
+ * @param list Doubly linked list to access
+ * @out_value Output pointer to receive front value
+ * @return Result code
+ * @complexity O(1)
+ */
+ResultCode DoublyLinkedList_Front(const DoublyLinkedList *list,
+                                  void **out_value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Retrieve data from head node */
+  *out_value = list->head->prev;
+
+  return kSuccess;
 }
