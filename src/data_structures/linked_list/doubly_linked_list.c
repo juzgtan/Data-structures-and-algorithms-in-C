@@ -139,3 +139,26 @@ void DoublyLinkedList_Destroy(DoublyLinkedList *list) {
   /* Step 3: Free struct itself */
   free(list);
 }
+
+/* ============================================================================
+ * CAPACITY FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * DoublyLinkedList_Size - Return number of elements in the list
+ * Return 0 if list is NULL (safe behavior)
+ * @complexity O(1)
+ */
+size_t DoublyLinkedList_Size(const DoublyLinkedList *list) {
+  return list == NULL ? 0 : list->size;
+}
+
+/**
+ * DoublyLinkedList_IsEmpty - Check if the list contains any elements
+ * Return True if list is NULL or empty
+ * @complexity O(1)
+ */
+bool DoublyLinkedList_IsEmpty(const DoublyLinkedList *list) {
+  return list == NULL ? true : list->size == 0;
+}
