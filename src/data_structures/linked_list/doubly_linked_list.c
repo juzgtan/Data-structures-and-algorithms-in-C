@@ -225,3 +225,36 @@ ResultCode DoublyLinkedList_Front(const DoublyLinkedList *list,
 
   return kSuccess;
 }
+
+/**
+ * DoublyLinkedList_Back - Return the last element without removing it
+ *
+ * Implementation flow:
+ * 1. Validate paramenters
+ * 2. Check list is not empty
+ * 3. Retrieve data from tail node
+ * 4. Set output pointer
+ *
+ * @param list Doubly linked list to access
+ * @param out_value Output pointer to receive back value
+ * @return Result code
+ * @complexity O(1)
+ */
+ResultCode DoublyLinkedList_Back(const DoublyLinkedList *list,
+                                 void **out_value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Retireve data  from tail node */
+  *out_value = list->tail->data;
+
+  return kSuccess;
+}
