@@ -58,6 +58,64 @@ static ResultCode _check_not_empty(const DoublyLinkedList *list) {
   return kSuccess;
 }
 
+/*
+ * @brift Retrieves the node at specific index
+ * @param list Double linked list to traverse
+ * @param index Position to retrieve (0-based)
+ * @param out_value Output pointer to receive the node
+ * @result Result code
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check index bounds
+ * 3. Choose traversal direction based on index position
+ * 4. Traverse from closer end tho the desied index
+ * 5. Set output pointer
+ *
+ * Optimization strategy:
+ * If index < size/2: Traverse from head (forward)
+ * If index >= size/2: traverse from tail (backward)
+ *
+ * EXAMPLE: size = 10
+ * index = 3 (3 < 5): traverse feom head (forward)
+ * index = 7 (7 >= 5): traverse from tail (backward)
+ *
+ * @complexity O(n/2)
+ */
+static ResultCode _get_node_at(const DoublyLinkedList *list, size_t index,
+                               DListNode **out_value) {
+  /* Step 1: Validate patameters */
+  if (list == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds */
+  if (index >= list->size) {
+    return kInvalidIndex;
+  }
+
+  DListNode *current;
+  /* Step 3: Choose traversal direction for better prerformence */
+  if (index < list->size / 2) {
+    /* Case 1: Index in first harf - traverse from head */
+    current = list->head;
+    for (size_t i = 0; i < index; i++) {
+      current = current->next;
+    }
+  } else {
+    /* Case 2: Index in second half - traverse from tail */
+    current = list->head;
+    for (size_t i = list->size - 1; i > index; i--) {
+      current = current->prev;
+    }
+  }
+
+  /* Step 4: Set output and return */
+  *out_value = current;
+
+  return kSuccess;
+}
+
 /* ============================================================================
  * LIFECYCLE FUNCTIONS
  * ============================================================================
@@ -255,6 +313,41 @@ ResultCode DoublyLinkedList_Back(const DoublyLinkedList *list,
 
   /* Step 3: Retireve data  from tail node */
   *out_value = list->tail->data;
+
+  return kSuccess;
+}
+
+/**
+ * DoublyLinkedList_GetAt - Return element at specific index
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Find node at given index
+ * 3. Retrieve data from that node
+ * 4. Set out put pointer
+ *
+ * @param list Doubly linked list to access
+ * @param index Position to retrieve (o-based)
+ * @param out_value Output pointer to receive value
+ * @return Result code
+ * @complexity O(n/2) - average
+ */
+ResultCode DoublyLinkedList_GetAt(const DoublyLinkedList *list, size_t index,
+                                  void **out_value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Find node at index */
+  DListNode *node;
+  ResultCode rc = _get_node_at(list, index, &node);
+  if (rc != kSuccess) {
+    return kSuccess;
+  }
+
+  /* Step 3: Retrieve data and return */
+  *out_value = node->data;
 
   return kSuccess;
 }
