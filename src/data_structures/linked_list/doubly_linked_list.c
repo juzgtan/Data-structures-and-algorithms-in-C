@@ -351,3 +351,60 @@ ResultCode DoublyLinkedList_GetAt(const DoublyLinkedList *list, size_t index,
 
   return kSuccess;
 }
+
+/* ============================================================================
+ * MODIFIER FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * DoubleLinkedList_PushFront - Inserts an element at beginning of the list
+ *
+ * Implementation flow:
+ * 1. Validate parameters:
+ * 2. Create new node
+ * 3. Handle empty list case
+ * 4. Handle non-empty list case (link at front)
+ * 5. Update head pointer
+ * 6. Increment size
+ *
+ * EXAMPLE:
+ * Before: head <-> A <-> B <-> NULL (tail)
+ * After PushFront(C): head <-> C <-> A <-> B <-> NULL (tail)
+ *
+ * @param list Doubly lined list to modify
+ * @param value Pointer to value to insert
+ * @param result Result code
+ * @complexity O(1)
+ */
+ResultCode DoublyLinkedList_PushFront(DoublyLinkedList *list, void *value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Create new node */
+  DListNode *node = _create_node(value);
+  if (node == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 3: Handle empty list case */
+  if (list->head == NULL) {
+    /* First element: Head and tail both pointer the new node */
+    list->head = node;
+    list->tail = node;
+  } else {
+    /* Step 4: Handle non-empty list - link at front
+     * New node's next pointer to current head
+     * Current head's prev pointer to new node */
+    node->next = list->head;
+    list->head->prev = node;
+    list->head = node;
+  }
+
+  /* Step 5: Increment size */
+  list->size++;
+
+  return kSuccess;
+}
