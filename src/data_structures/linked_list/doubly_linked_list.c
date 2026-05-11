@@ -58,7 +58,7 @@ static ResultCode _check_not_empty(const DoublyLinkedList *list) {
   return kSuccess;
 }
 
-/*
+/**
  * @brift Retrieves the node at specific index
  * @param list Double linked list to traverse
  * @param index Position to retrieve (0-based)
@@ -401,6 +401,59 @@ ResultCode DoublyLinkedList_PushFront(DoublyLinkedList *list, void *value) {
     node->next = list->head;
     list->head->prev = node;
     list->head = node;
+  }
+
+  /* Step 5: Increment size */
+  list->size++;
+
+  return kSuccess;
+}
+
+/**
+ * DoublyLinkedList_PushBack - Inserts an element at the end of the list
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Create new node
+ * 3. Handle empty  list case
+ * 4. Handle non-empty list case (link at back)
+ * 5. Update tail pointer
+ * 6. Increment size
+ *
+ * EXAMPLE:
+ * Before: head <-> A <-> B <-> NULL (tail)
+ * After PushBack(C): head <-> A <-> B <-> C <-> NULL (tail)
+ *
+ * @param list Doubly linked list to modify
+ * @param value Pointer to value to insert
+ * @return Result code
+ * @complexity O(1)
+ */
+ResultCode DoublyLinkedList_PushBack(DoublyLinkedList *list, void *value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Create new node */
+  DListNode *node = _create_node(value);
+  if (node == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 3: Handle empty list case */
+  if (list->tail == NULL) {
+    /* First element: head and tail both point to the new node */
+    list->head = node;
+    list->tail = node;
+  } else {
+    /* Step 4: Handle non-empty list - link at back
+     * Current tail's next points to new node
+     * New node's prev points to current tail
+     */
+    node->prev = list->tail;
+    list->tail->next = node;
+    list->tail = node;
   }
 
   /* Step 5: Increment size */
