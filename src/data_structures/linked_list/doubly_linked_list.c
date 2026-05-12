@@ -517,3 +517,62 @@ ResultCode DoublyLinkedList_PopFront(DoublyLinkedList *list) {
 
   return kSuccess;
 }
+
+/**
+ * DoublyLinkedList_PopBack - Removes the last element from the list
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check list is not empty
+ * 3. Save old node tail node
+ * 4. Update tail to previous node
+ * 5. Handle single-element list case
+ * 6. Free old tail node
+ * 7. Decrement size
+ *
+ * EXAMPLE:
+ * Before: head <-> A <-> B <-> C <-> NULL, tail = C
+ * After PopBack(): head <-> A <-> B <-> NULL, tail = B, C is freed
+ *
+ * @param list Doubly linked list to modify
+ * @param Result code
+ * @complexity O(1)
+ */
+ResultCode DoublyLinkedList_PopBack(DoublyLinkedList *list) {
+  /* Step 1: Validate parameters */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Save old tail node */
+  DListNode *old_tail = list->tail;
+
+  /* Step 4: Update tail to previous node */
+  list->tail = list->tail->prev;
+
+  /* Step 5: Handle singly-element list case
+   * If list becomes empty after removal, head must also be NULL
+   * Otherwise, new tail's next should be NULL
+   */
+  if (list->tail == NULL) {
+    /* List is now empty */
+    list->head = NULL;
+  } else {
+    /* List still has elements: Remove forward link to old tail */
+    list->tail->next = NULL;
+  }
+
+  /* Step 6: Free the old tail node */
+  free(old_tail);
+
+  /* Step 7: Decrement size */
+  list->size--;
+
+  return kSuccess;
+}
