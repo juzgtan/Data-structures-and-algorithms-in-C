@@ -576,3 +576,75 @@ ResultCode DoublyLinkedList_PopBack(DoublyLinkedList *list) {
 
   return kSuccess;
 }
+
+/**
+ * DoublyLinkedList_InsertAt - Inserts an element at specified index
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check index bounds
+ * 3. Handle special cases (front, back)
+ * 4. For middle insertion, find node at index
+ * 5. Create new node and link it betwenn prev and current
+ * 6. Increment size
+ *
+ * EXAMPLE: (insert at index = 2)
+ * Before: [A] <-> [B] <-> [C] <-> [D]
+ * After InsertAt(2, X): [A] <-> [B] <-> [X] <-> [C] <-> [D]
+ *
+ * @param list Doubly linked list to modify
+ * @param index Position to insert at (0 <= index <= size)
+ * @param value Pointer to value to insert
+ * @return Result code
+ * @complexity O(n) - worst case
+ */
+ResultCode DoublyLinkedList_InsertAt(DoublyLinkedList *list, size_t index,
+                                     void *value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds */
+  if (index > list->size) {
+    return kInvalidIndex;
+  }
+
+  /* Step 3: Handle special cases for efficienly */
+  /* Insert at beginning */
+  if (index == 0) {
+    return DoublyLinkedList_PushFront(list, value);
+  }
+
+  /* Insert at end */
+  if (index == list->size) {
+    return DoublyLinkedList_PushBack(list, value);
+  }
+
+  /* Step 4: Insert at middle - find node currently at this index
+   * The new node will be inserted BEFORE the current node */
+  DListNode *current;
+  ResultCode rc = _get_node_at(list, index, &current);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 5: Create new node */
+  DListNode *node = _create_node(value);
+  if (node == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 6: Link new node betwen current -> prev and current
+   * Before: [...] <-> [prev] <-> [current] <-> [...]
+   * After:  [...] <-> [prev] <-> [node] <-> [current] <-> [...] */
+  node->prev = current->prev;
+  node->next = current;
+  current->prev->next = node;
+  current->prev = node;
+
+  /* Step 7: Increment size */
+  list->size++;
+
+  return kSuccess;
+}
