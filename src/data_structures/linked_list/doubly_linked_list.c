@@ -648,3 +648,68 @@ ResultCode DoublyLinkedList_InsertAt(DoublyLinkedList *list, size_t index,
 
   return kSuccess;
 }
+
+/**
+ * DoublyLinkedList_RemoveAt - Removes an element at specifiec index
+ *
+ * Implementation flow:
+ * 1. Valdate parameters
+ * 2. Check index bounds
+ * 3. Handle special cases (front, back)
+ * 4. For middle removal, find node at index
+ * 5. Link prev and nex nodes together
+ * 6. Free the removal node
+ * 7. Decrement size
+ *
+ * EXAMPLE: (remove at index = 2)
+ * Before : [A] <-> [B] <-> [X] <-> [C] <-> [D]
+ * After RemoveAt(2): [A] <-> [B] <-> [C] <-> [D]
+ *
+ * @param list Doubly linked list to modify
+ * @param index Position to remove (0 <= idnex <= size)
+ * @param Result code
+ * @complexity O(n) - worse case
+ */
+ResultCode DoublyLinkedList_RemoveAt(DoublyLinkedList *list, size_t index) {
+  /* Step 1: Validate parameters */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds */
+  if (index >= list->size) {
+    return kInvalidIndex;
+  }
+
+  /* Step 3: Handle special cases for efficienly */
+  /* Remove from beginning */
+  if (index == 0) {
+    return DoublyLinkedList_PopFront(list);
+  }
+
+  /* Remove from end*/
+  if (index == list->size - 1) {
+    return DoublyLinkedList_PopBack(list);
+  }
+
+  /* Step 4: Remove from middle - find node to remove */
+  DListNode *node;
+  ResultCode rc = _get_node_at(list, index, &node);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Link prev and next nodes togetther, bypassing the node to remove
+   * Before: [...] <-> [prev] <-> [node] <-> [next] <-> [...]
+   * After: [...]  <-> [prev <-> [next] <-> [...] */
+  node->prev->next = node->next;
+  node->next->prev = node->prev;
+
+  /* Step 6: Free the removed node */
+  free(node);
+
+  /* Step 7: Decrement size */
+  list->size--;
+
+  return kSuccess;
+}
