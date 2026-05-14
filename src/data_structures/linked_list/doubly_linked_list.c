@@ -713,3 +713,56 @@ ResultCode DoublyLinkedList_RemoveAt(DoublyLinkedList *list, size_t index) {
 
   return kSuccess;
 }
+
+/* ============================================================================
+ * ADVANCED OPERATIONS
+ * ============================================================================
+ */
+
+/**
+ * DoublyLinkedList_RemoveNode - Removes a specific node (given node pointer)
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Handle special cases (head, tail)
+ * 3. For middle removal, link prev and next
+ * 4. Free node
+ * 5. Decrement size
+ *
+ * @param list Doubly linked list to modify
+ * @param node Node to remove (must belong to the list)
+ * @return Result code
+ *
+ * This O(1) because we have dirct access to node->prev and node->next
+ * @complexity O(1)
+ */
+ResultCode DoublyLinkedList_RemoveNode(DoublyLinkedList *list,
+                                       DListNode *node) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || node == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Handle specified cases */
+  /* Where node at head*/
+  if (node == list->head) {
+    return DoublyLinkedList_PopFront(list);
+  }
+
+  /* Where node at tail */
+  if (node == list->tail) {
+    return DoublyLinkedList_PopBack(list);
+  }
+
+  /* Step 3: Remove from middle */
+  node->prev->next = node->next;
+  node->next->prev = node->prev;
+
+  /* Step 4: Free the node */
+  free(node);
+
+  /* Step 5: Decrement size */
+  list->size--;
+
+  return kSuccess;
+}
