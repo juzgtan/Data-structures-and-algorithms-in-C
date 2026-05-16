@@ -766,3 +766,55 @@ ResultCode DoublyLinkedList_RemoveNode(DoublyLinkedList *list,
 
   return kSuccess;
 }
+
+/**
+ * DoublyLinkedList_InsertAfter - Insert a node after a given node
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Create new node
+ * 3. Link new node betwen node and node->next
+ * 4. Update tail if inserting after tail
+ * 5.Increment size
+ *
+ * @param list Doubly linked list to modify
+ * @param node Node after which to insert
+ * @param out_value Optinal output for the new node (can be NULL)
+ * @return Result code
+ * @complexity O(1)
+ */
+ResultCode DoublyLinkedList_InsertAfter(DoublyLinkedList *list, DListNode *node,
+                                        void *value, DListNode **out_node) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || node == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Create new node */
+  DListNode *new_node = _create_node(value);
+  if (new_node == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 3: Link new node between node and node->next */
+  new_node->prev = node;
+  new_node->next = node->next;
+
+  /* Step 4: Update node->next if it exists */
+  if (node->next != NULL) {
+    node->next->prev = new_node;
+  } else {
+    /*  Node if tail, new node becomes new tail */
+    list->tail = new_node;
+  }
+
+  node->next = new_node;
+  list->size++;
+
+  /* Step 5: Set output if requested */
+  if (out_node != NULL) {
+    *out_node = new_node;
+  }
+
+  return kSuccess;
+}
