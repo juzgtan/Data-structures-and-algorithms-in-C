@@ -818,3 +818,57 @@ ResultCode DoublyLinkedList_InsertAfter(DoublyLinkedList *list, DListNode *node,
 
   return kSuccess;
 }
+
+/**
+ * DoublyLinkedList_InsertBefore - Insert a node abefore a given node
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Create new node
+ * 3. Link new node between node->prev and node
+ * 4. Update head if inserting before head
+ * 5. Increment size
+ *
+ * @param list Doybly linked list to modify
+ * @param node Node before which to insert (mus be in list)
+ * @param value Pointer to value to insert
+ * @param out_value Optional output for the new node (can be NULL)
+ * @result Result code
+ * @complexity O(1)
+ */
+ResultCode DoublyLinkedList_InsertBefore(DoublyLinkedList *list,
+                                         DListNode *node, void *value,
+                                         DListNode **out_node) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || node == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Create new node */
+  DListNode *new_node = _create_node(value);
+  if (new_node == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 3: Link new node between node->prev and node */
+  new_node->next = node;
+  new_node->prev = node->prev;
+
+  /* Step 4: Update node->prev if exists */
+  if (node->prev != NULL) {
+    node->prev->next = new_node;
+  } else {
+    /* Node is head, new node becomes new head */
+    list->head = new_node;
+  }
+
+  node->prev = new_node;
+  list->size++;
+
+  /* Step 5: Set output if requested */
+  if (out_node != NULL) {
+    *out_node = new_node;
+  }
+
+  return kSuccess;
+}
