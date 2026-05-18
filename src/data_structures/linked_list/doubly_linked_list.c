@@ -872,3 +872,50 @@ ResultCode DoublyLinkedList_InsertBefore(DoublyLinkedList *list,
 
   return kSuccess;
 }
+
+/**
+ * DoubleLinkedList_Reverse - Reverse the list in-place
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check lit not empty
+ * 3. Swap next and prev for each node
+ * 4. Swap head and tail
+ *
+ * @param list Doubly list to reverse
+ * @param Result code
+ * @complexity O(n)*
+ */
+ResultCode DoublyLinkedList_Reverse(DoublyLinkedList *list) {
+  /* Step 1: Validate parameters */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Swap next and prev for each node */
+  DListNode *current = list->head;
+  DListNode *temp = NULL;
+
+  while (current != NULL) {
+    /* Swap next and prev pointers */
+    temp = current->prev;
+    current->prev = current->next;
+    current->next = temp;
+
+    /* Move to next node (which was previous before swap) */
+    current = current->prev;
+  }
+
+  /* Step 4: Swap head and tail */
+  temp = (DListNode *)list->head;
+  list->head = list->tail;
+  list->tail = temp;
+
+  return kSuccess;
+}
