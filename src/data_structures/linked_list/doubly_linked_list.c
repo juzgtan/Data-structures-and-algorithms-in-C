@@ -919,3 +919,50 @@ ResultCode DoublyLinkedList_Reverse(DoublyLinkedList *list) {
 
   return kSuccess;
 }
+
+/**
+ * DoublyLinkedList_Find - Finds a node by its data (linear search)
+ *
+ * Implementation flow:
+ * 1. Validate paramenters
+ * 2. Traversal list from head
+ * 3. Compare each node's data with target
+ * 4. Return node if found
+ *
+ * @param list Doubly linked list to search
+ * @param data Data to find
+ * @param compare Comparition function (NULL for pointer comparition)
+ * @param out_node Output pointer to receive found node
+ * @param result Result code
+ * @complexity O(n)
+ */
+ResultCode DoublyLinkedList_Find(const DoublyLinkedList *list, const void *data,
+                                 int (*compare)(const void *, const void *),
+                                 DListNode **out_node) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_node == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Traverse and search */
+  DListNode *current = list->head;
+
+  while (current != NULL) {
+    int match = 0;
+    if (compare != NULL) {
+      match = compare(data, current->data) == 0;
+    } else {
+      match = (data == current->data);
+    }
+
+    if (match) {
+      *out_node = current;
+
+      return kSuccess;
+    }
+
+    current = current->next;
+  }
+
+  return kNotFound;
+}
