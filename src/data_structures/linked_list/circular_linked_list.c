@@ -138,3 +138,18 @@ void CircularLinkedList_Destroy(CircularLinkedList *list) {
   CircularLinkedList_Clear(list);
   free(list);
 }
+
+/* ============================================================================
+ * CAPACITY FUNCTIONS
+ * ============================================================================
+ */
+
+/** CircularLinkedList_Clear_Size - Returns the numbers of elements in the list
+ *
+ * Returns 0 if list is NULL (safe behavior)
+ *
+ * @complexity O(1)
+ */
+size_t CircularLinkedList_Size(const CircularLinkedList *list) {
+  return list == NULL ? 0 : list->size;
+}
