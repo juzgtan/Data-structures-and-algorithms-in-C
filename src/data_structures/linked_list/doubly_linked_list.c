@@ -966,3 +966,38 @@ ResultCode DoublyLinkedList_Find(const DoublyLinkedList *list, const void *data,
 
   return kNotFound;
 }
+
+/**
+ * DoublyLinkedList_IsPalindrome - Checks if the list is a palindrome
+ *
+ * Implementation flow:
+ * 1. Validate paramenters
+ * 2. Use two pointers: left from head, right from tail
+ * 3. Compare data at both ends, move inward
+ * 4. Return false if mismatch found
+ *
+ * @param list Doubly linked list to check
+ * @param true if palindrome, false otherwise
+ * @complexity O(n)
+ */
+bool DoublyLinkedList_IsPalindrome(const DoublyLinkedList *list) {
+  /* Step 1: Validate parameter */
+  if (list == NULL || list->size < 2) {
+    return true;
+  }
+
+  /* Step 2: Initialize pointers at both ends */
+  DListNode *left = list->head;
+  DListNode *right = list->tail;
+
+  /* Step 3: Compare from both ands toward center */
+  for (size_t i = 0; i < list->size / 2; i++) {
+    if (left->data != right->data) {
+      return false;
+    }
+    left = list->head->data;
+    right = list->tail->prev;
+  }
+
+  return true;
+}
