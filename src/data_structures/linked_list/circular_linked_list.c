@@ -27,6 +27,11 @@ static CListNode *_create_node(void *data) {
   return node;
 }
 
+/* ============================================================================
+ * LIFECYCLE FUNCTIONS
+ * ============================================================================
+ */
+
 /**
  * CircularLinkedList_Create - Creates a new empty circular linked list
  *
@@ -73,4 +78,43 @@ ResultCode CircularLinkedList_Create(CircularLinkedList **result) {
   /* Step 6: Success - Set output and return */
   *result = list;
   return kSuccess;
+}
+
+/**
+ * CircularLinkedList_Clear - Removes all nodes from the list
+ *
+ * Implementation flow:
+ * 1. Check list is NULL or empty (silently return )
+ * 2. Break the circular linl first
+ * 3. Traverse and free all nodes
+ * 4. Reset list to empty state
+ *
+ * @param list Circular linked list to clear
+ * @complexity O(n)
+ */
+void CircularLinkedList_Clear(CircularLinkedList *list) {
+  /* Step 1: Handle NULL or empty gracefully */
+  if (list == NULL || list->size == 0) {
+    return;
+  }
+
+  /* Step 2: Break circular link first
+   * This prevents infinite loop during traversal
+   */
+  if (list->tail != NULL) {
+    list->tail->next = NULL;
+  }
+
+  /* Step 3: Traverse and free all nodes */
+  CListNode *current = list->head;
+  while (current != NULL) {
+    CListNode *next = current->next;
+    free(current);
+    current = next;
+  }
+
+  /* Step 4: Reset list to empty state */
+  list->size = 0;
+  list->head = NULL;
+  list->tail = NULL;
 }
