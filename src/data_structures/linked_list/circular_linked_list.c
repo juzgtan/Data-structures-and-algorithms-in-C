@@ -118,3 +118,23 @@ void CircularLinkedList_Clear(CircularLinkedList *list) {
   list->head = NULL;
   list->tail = NULL;
 }
+
+/**
+ * CircularLinkedList_Destroy - Frees all memory associated with the list
+ *
+ * Implementation flow:
+ * 1. Check if list is NULL (silently return)
+ * 2. Clear all nodes (reuse CircularLinkedList_Clear logic)
+ * 3. Free the CircularLinkedList struct itself
+ *
+ * @param list Circular linked list to destroy (can be NULL)
+ * @complexity O(n)
+ */
+void CircularLinkedList_Destroy(CircularLinkedList *list) {
+  if (list == NULL) {
+    return;
+  }
+
+  CircularLinkedList_Clear(list);
+  free(list);
+}
