@@ -1001,3 +1001,31 @@ bool DoublyLinkedList_IsPalindrome(const DoublyLinkedList *list) {
 
   return true;
 }
+
+/**
+ * DoublyLinkedList_SwapNodes - Swaps two nodes by swapping their data
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Swap the data pointers of the two nodes
+ *
+ * @param list DoublyLinked list to modify
+ * @param node1 First node to swap
+ * @param node2 Second node to swap
+ * @result Result code
+ * @complexity O(1)
+ */
+ResultCode DoublyLinkedList_SwapNodes(DoublyLinkedList *list, DListNode *node1,
+                                      DListNode *node2) {
+  /* Step 1: Validate paramenters */
+  if (list == NULL || node1 == NULL || node2 == NULL || node1 == node2) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Swap data pointers */
+  void *temp = node1->data;
+  node1->data = node2->data;
+  node2->data = temp;
+
+  return kSuccess;
+}
