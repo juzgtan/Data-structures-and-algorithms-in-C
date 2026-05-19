@@ -144,7 +144,7 @@ void CircularLinkedList_Destroy(CircularLinkedList *list) {
  * ============================================================================
  */
 
-/** CircularLinkedList_Clear_Size - Returns the numbers of elements in the list
+/** CircularLinkedList_Size - Returns the numbers of elements in the list
  *
  * Returns 0 if list is NULL (safe behavior)
  *
@@ -152,4 +152,14 @@ void CircularLinkedList_Destroy(CircularLinkedList *list) {
  */
 size_t CircularLinkedList_Size(const CircularLinkedList *list) {
   return list == NULL ? 0 : list->size;
+}
+
+/** CircularLinkedList_IsEmpty - Checks if the list contains any elements
+ *
+ * Return true if list is NULL or Empty
+ *
+ * @complexity O(1)
+ */
+bool CircularLinkedList_IsEmpty(const CircularLinkedList *list) {
+  return list == NULL ? true : list->size == 0;
 }
