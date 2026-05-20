@@ -28,6 +28,46 @@ static CListNode *_create_node(void *data) {
 }
 
 /**
+ * @brief Retrieves the node at specific index in circlar linked list
+ *
+ * @param list Circular linked list
+ * @param index Position to retrieve (0-based)
+ * @param out_node Outout pointer to receive the node
+ * @result Result code
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2.Check index bounds
+ * 3. Traverse from head to the desired index
+ * 4. Set output pointer
+ *
+ * @complexity O(n) - in worst case
+ */
+static ResultCode _get_node_at(const CircularLinkedList *list, size_t index,
+                               CListNode **out_node) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_node == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds */
+  if (index >= list->size) {
+    return kInvalidIndex;
+  }
+
+  /* Step 3: Traverse from head to the desired index */
+  CListNode *current = list->head;
+  for (size_t i = 0; i < index; i++) {
+    current = current->next;
+  }
+
+  /* Step 4: Set output and return */
+  *out_node = current;
+
+  return kSuccess;
+}
+
+/**
  * @brief Validates that the list is not empty
  *
  * @param list Circular linked list to check
