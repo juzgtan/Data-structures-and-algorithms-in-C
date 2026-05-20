@@ -194,7 +194,7 @@ bool CircularLinkedList_IsEmpty(const CircularLinkedList *list) {
  */
 
 /**
- * CircularLinkedList_Front - Returns thr first element without removing it
+ * CircularLinkedList_Front - Returns the first element without removing it
  *
  * Implementation flow:
  * 1. Vaidate parameters
@@ -221,8 +221,42 @@ ResultCode CircularLinkedList_Front(const CircularLinkedList *list,
     return rc;
   }
 
-  /* Step 3: Retrieve data from heead and set value for output pointer */
+  /* Step 3: Retrieve data from head and set value for output pointer */
   *out_value = list->head->data;
+
+  return kSuccess;
+}
+
+/**
+ * CircularLinkedList_Back - Returns the fast element without removing it
+ *
+ * Implementation flow:
+ * 1. Vaidate parameters
+ * 2. Check list is not empty
+ * 3. Retrieve data from tail node
+ * 4. Set output pointer
+ *
+ * @param list Circular linked list to access
+ * @param out_value Output pointer to receive front value
+ * @return Result code
+ *
+ * @complexity O(1)
+ */
+ResultCode CircularLinkedList_Back(const CircularLinkedList *list,
+                                   void **out_value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_value != NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Retrieve data from tail and set value for output pointer */
+  *out_value = list->tail->data;
 
   return kSuccess;
 }
