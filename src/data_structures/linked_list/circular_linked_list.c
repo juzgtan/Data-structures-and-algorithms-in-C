@@ -163,3 +163,27 @@ size_t CircularLinkedList_Size(const CircularLinkedList *list) {
 bool CircularLinkedList_IsEmpty(const CircularLinkedList *list) {
   return list == NULL ? true : list->size == 0;
 }
+
+/**
+ * @brief Validates that the list is not empty
+ *
+ * @param list Circular linked list to check
+ * @return Result code
+ *
+ * CASES HANDLED:
+ * - list == NULL -> kNullParameter
+ * - size == 0 -> kEmpty
+ * - otherwise -> kSuccess
+ *
+ * @complexity O(1)
+ */
+static ResultCode _check_not_empty(const CircularLinkedList *list) {
+  if (list == NULL) {
+    return kNullParameter;
+  }
+  if (list->size == 0) {
+    return kEmpty;
+  }
+
+  return kSuccess;
+}
