@@ -27,6 +27,30 @@ static CListNode *_create_node(void *data) {
   return node;
 }
 
+/**
+ * @brief Validates that the list is not empty
+ *
+ * @param list Circular linked list to check
+ * @return Result code
+ *
+ * CASES HANDLED:
+ * - list == NULL -> kNullParameter
+ * - size == 0 -> kEmpty
+ * - otherwise -> kSuccess
+ *
+ * @complexity O(1)
+ */
+static ResultCode _check_not_empty(const CircularLinkedList *list) {
+  if (list == NULL) {
+    return kNullParameter;
+  }
+  if (list->size == 0) {
+    return kEmpty;
+  }
+
+  return kSuccess;
+}
+
 /* ============================================================================
  * LIFECYCLE FUNCTIONS
  * ============================================================================
@@ -164,26 +188,41 @@ bool CircularLinkedList_IsEmpty(const CircularLinkedList *list) {
   return list == NULL ? true : list->size == 0;
 }
 
+/* ============================================================================
+ * DATA ACCESS FUNCTIONS
+ * ============================================================================
+ */
+
 /**
- * @brief Validates that the list is not empty
+ * CircularLinkedList_Front - Returns thr first element without removing it
  *
- * @param list Circular linked list to check
+ * Implementation flow:
+ * 1. Vaidate parameters
+ * 2. Check list is not empty
+ * 3. Retrieve data from head node
+ * 4. Set output pointer
+ *
+ * @param list Circular linked list to access
+ * @param out_value Output pointer to receive front value
  * @return Result code
- *
- * CASES HANDLED:
- * - list == NULL -> kNullParameter
- * - size == 0 -> kEmpty
- * - otherwise -> kSuccess
  *
  * @complexity O(1)
  */
-static ResultCode _check_not_empty(const CircularLinkedList *list) {
-  if (list == NULL) {
+ResultCode CircularLinkedList_Front(const CircularLinkedList *list,
+                                    void **out_value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_value != NULL) {
     return kNullParameter;
   }
-  if (list->size == 0) {
-    return kEmpty;
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
   }
+
+  /* Step 3: Retrieve data from heead and set value for output pointer */
+  *out_value = list->head->data;
 
   return kSuccess;
 }
