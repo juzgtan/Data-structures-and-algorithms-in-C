@@ -335,3 +335,60 @@ ResultCode CircularLinkedList_GetAt(const CircularLinkedList *list,
 
   return kSuccess;
 }
+/* ============================================================================
+ * MODIFIER FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * CircularLinkedList_PushFront - Insert an element at the beginning of the list
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Create new node
+ * 3. Handle empty list case (point to if self)
+ * 4. Handle non-empty list case (insert at front, maintain circularity
+ * 5. Increment size
+ *
+ * In a circular list, inserting at the front requires updating tail->next
+ * to point to the new head)
+ *
+ * @param list Circular linked list to modify
+ * @param value Pointer to value to insert
+ * @return Result code
+ *
+ * @complexity O(1)
+ */
+ResultCode CircularLinkedList_PushFront(CircularLinkedList *list, void *value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Create new node */
+  CListNode *node = _create_node(value);
+  if (node == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 3: Handle empty list case */
+  if (list->head == NULL) {
+    /* Empty list - new node points to ifself */
+    node->next = node;
+    list->head = node;
+    list->tail = node;
+  } else {
+    /* Step 4: Non-empty list - insert at front
+     * New node points to current head *
+     * Tail's next points to new node (maintain circularity)
+     */
+    node->next = list->head;
+    list->head = node;
+    list->tail->next = node; /* Update tail's next to new head */
+  }
+
+  /* Step 5: Increment size */
+  list->size++;
+
+  return kSuccess;
+}
