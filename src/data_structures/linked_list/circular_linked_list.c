@@ -300,3 +300,38 @@ ResultCode CircularLinkedList_Back(const CircularLinkedList *list,
 
   return kSuccess;
 }
+
+/**
+ * CircularLinkedList_GetAt - Returns element at specific index
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Get node at specific index
+ * 3. Set out put pointer
+ *
+ * @param list Circular linked list to access
+ * @param index Position to retrieve (0-based)
+ * @param out_value Output pointer to receive value
+ * @return Result code
+ *
+ * @complexity O(n)
+ */
+ResultCode CircularLinkedList_GetAt(const CircularLinkedList *list,
+                                    size_t index, void **out_value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Get node at specific index */
+  CListNode *node;
+  ResultCode rc = _get_node_at(list, index, &node);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Retrieve data from index and set value for output pointer */
+  *out_value = node->data;
+
+  return kSuccess;
+}
