@@ -392,3 +392,53 @@ ResultCode CircularLinkedList_PushFront(CircularLinkedList *list, void *value) {
 
   return kSuccess;
 }
+
+/**
+ * CircularLinkedList_PushBack - Inserts an element at the end of the list
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Create new node
+ * 3. Handle empty list case (point to itself)
+ * 4.Handle non-empty list case (insert at back, maintain circularity)
+ * 5 Increment size
+ *
+ * @param list Circular linked list to modify
+ * @param value Pointer to value to insert
+ * @result Result code
+ *
+ * @complexity O(1)
+ */
+ResultCode CircularLinkedList_PushBack(CircularLinkedList *list, void *value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Create new node */
+  CListNode *node = _create_node(value);
+  if (value == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 3: Handle empty list case */
+  if (list->tail == NULL) {
+    /* Empty list - new node points to ifself */
+    node->next = list->head;
+    list->head = node;
+    list->tail = node;
+  } else {
+    /* Step 4: Non-empty list - insert at back
+     * New node points to head (maintain circularity)
+     * Current tail's next point to new node
+     */
+    node->next = list->head;
+    list->tail->next = node;
+    list->tail = node;
+  }
+
+  /* Step 5: Increment size */
+  list->size++;
+
+  return kSuccess;
+}
