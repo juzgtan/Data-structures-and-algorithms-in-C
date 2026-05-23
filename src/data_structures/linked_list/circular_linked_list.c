@@ -442,3 +442,51 @@ ResultCode CircularLinkedList_PushBack(CircularLinkedList *list, void *value) {
 
   return kSuccess;
 }
+
+/**
+ * CircularLinkedList_PopFront - Removes the first element from the list
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check list not empty
+ * 3. Handle single-element list case
+ * 4. For mutil-element list , remove front and update tai->next
+ * 5. Decrement size
+ *
+ * @param list Circular linked lis to modify
+ * @result Return code
+ *
+ * @complexity O(1)
+ */
+ResultCode CircularLinkedList_PopFront(CircularLinkedList *list) {
+  /* Step 1: Validate parameters */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Handle single-element list case */
+  if (list->tail == NULL) {
+    free(list->head);
+    list->head = NULL;
+    list->tail = NULL;
+    list->size = 0;
+
+    return kSuccess;
+  }
+
+  /* STep 4: Remove front npde from mutil-element list */
+  CListNode *old_head = list->head;
+  list->head = list->head->next;
+  list->tail->next = list->head; /* Maintain circular property */
+
+  free(old_head);
+  list->size--;
+
+  return kSuccess;
+}
