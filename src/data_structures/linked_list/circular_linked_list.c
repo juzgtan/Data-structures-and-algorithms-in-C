@@ -490,3 +490,59 @@ ResultCode CircularLinkedList_PopFront(CircularLinkedList *list) {
 
   return kSuccess;
 }
+
+/**
+ * CircularLinkedList_PopBack - Removes the last element from the list
+ *
+ * Implementation flow:
+ * 1. Validat parameters
+ * 2. Check list is not empty
+ * 3. Handle single-element list case
+ * 4. For multi-element list, find second-to-last node
+ * 5. Update tail and maintain circularity
+ * 6. Decrement size
+ *
+ * @param list Circular linked list to modify
+ * @return Result code
+ *
+ * @complexity O(n) - (Neeed to find second-to-last node )
+ */
+ResultCode CircularLinkedList_PopBack(CircularLinkedList *list) {
+  /* Step 1: Validate parameters */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Handle singly-element list case */
+  if (list->size == 1) {
+    free(list->head);
+    list->head = NULL;
+    list->tail = NULL;
+    list->size = 0;
+
+    return kSuccess;
+  }
+
+  /* Step 4: Find second-to-last node
+   * Traverse from head until current->next is the tail
+   */
+  CListNode *current = list->head;
+
+  while (current->next != list->tail) {
+    current = current->next;
+  }
+
+  /* Step 5: Remove tail node */
+  free(list->tail);
+  list->tail = current;
+  list->tail->next = list->head; /* Maintain circular property */
+  list->size++;
+
+  return kSuccess;
+}
