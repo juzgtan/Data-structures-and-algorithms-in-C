@@ -546,3 +546,64 @@ ResultCode CircularLinkedList_PopBack(CircularLinkedList *list) {
 
   return kSuccess;
 }
+
+/**
+ * CircularLinkedList_InsertAt - Inserts an element at the specificed index
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check index bounds
+ * 3. Handle special cases (front, back)
+ * 4. For middle insertion. find node before insertion point
+ * 5. Create new node and link it
+ * 6. Increment size
+ *
+ * @param list Circular linked list to modify
+ * @param index Position to insert (0 <= index <= size)
+ * @param value Pointer to value to insert
+ * @return Result code
+ *
+ * @complexity O(n) - worst case
+ */
+ResultCode CircularLinkedList_InsertAt(CircularLinkedList *list, size_t index,
+                                       void *value) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds */
+  if (index > list->size) {
+    return kInvalidIndex;
+  }
+
+  /* Step 3: Handle special cases for efficiency */
+  if (index == 0) {
+    return CircularLinkedList_PushFront(list, value);
+  }
+
+  if (index == list->size) {
+    return CircularLinkedList_PushBack(list, value);
+  }
+
+  /* Step 4: Insert in middle - find node before insertion point */
+  CListNode *prev;
+  ResultCode rc = _get_node_at(list, index - 1, &prev);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 5: Create new node */
+  CListNode *node = _create_node(value);
+  if (node == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 6: Link the new node */
+  node->next = prev->next;
+  prev->next = node;
+
+  list->size++;
+
+  return kSuccess;
+}
