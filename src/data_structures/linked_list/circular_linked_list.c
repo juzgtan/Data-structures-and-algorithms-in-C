@@ -607,3 +607,62 @@ ResultCode CircularLinkedList_InsertAt(CircularLinkedList *list, size_t index,
 
   return kSuccess;
 }
+
+/**
+ * CircularLinkedList_RemoveAt - Removes an elements at the specified index
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check index bounds
+ * 3. Handle special cases (front, back)
+ * 4. For middle removal, find node before removal point
+ * 5. Unlink and free the target node
+ * 6. Decrement size
+ *
+ * @param list Circular linked list to modify
+ * @param index Position to remove (0 <= index < size)
+ * @return Result code
+ *
+ * @complexity O(n) - worse case
+ */
+ResultCode CircularLinkedList_RemoveAt(CircularLinkedList *list, size_t index) {
+  /* Step 1: Validate parameter */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check index bounds */
+  if (index >= list->size) {
+    return kInvalidIndex;
+  }
+
+  /* Step 3: Handle special cases */
+  if (index == 0) {
+    return CircularLinkedList_PopFront(list);
+  }
+
+  if (index == list->size) {
+    return CircularLinkedList_PopBack(list);
+  }
+
+  /* Step 4: Find node before the one to remove */
+  CListNode *prev;
+  ResultCode rc = _get_node_at(list, index, &prev);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 5: Remove node */
+  CListNode *to_remove = prev->next;
+  prev->next = to_remove->next;
+
+  /* Step 6:  Update tail if removing last node */
+  if (to_remove == list->tail) {
+    list->tail = prev;
+  }
+
+  free(to_remove);
+  list->size--;
+
+  return kSuccess;
+}
