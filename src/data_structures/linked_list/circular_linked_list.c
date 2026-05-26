@@ -666,3 +666,69 @@ ResultCode CircularLinkedList_RemoveAt(CircularLinkedList *list, size_t index) {
 
   return kSuccess;
 }
+
+/* ============================================================================
+ * CIRCULAR-SPECIFIC OPERATIONS
+ * ============================================================================
+ */
+
+/**
+ * CircularLinkedList_Rotates the list by moving head forward
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check list not empty
+ * 3. Normalize steps  (steps % size)
+ * 4. Find new head and new tail
+ * 5. Update head, tail and maintain circularity
+ *
+ * This a unique operation only possition with circular lists
+ *
+ * EXAMPLE: Rotate by 2 steps on [A,B,C,D,E]
+ * After rotation: [C,D,E,A,B]
+ * (Element at index 2 becomes new head)
+ *
+ * @param: list Circular linked list to modify
+ * @param steps Numbers of steps to rotate forward
+ * @return Result code
+ *
+ * @complexity O(steps % size)
+ */
+ResultCode CircularLinkedList_Rotate(CircularLinkedList *list, size_t steps) {
+  /* Step 1: Validate parameters */
+  if (list == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Normalize steps (no need to rotate full circle) */
+  if (steps == 0 || steps == list->size) {
+    return kSuccess;
+  }
+
+  steps = steps % list->size;
+
+  /* Step 4: Find new head (node at index 'steps') */
+  CListNode *new_head = list->head;
+  for (size_t i = 0; i < steps; i++) {
+    new_head = new_head->next;
+  }
+
+  /* Step 5: Find new tail (node before new head) */
+  CListNode *new_tail = list->head;
+  while (new_tail->next != new_head) {
+    new_tail = new_tail->next;
+  }
+
+  /* STep 6: Update head and tail, maintain circularity */
+  list->head = new_head;
+  list->tail = new_tail;
+  list->tail->next = list->head;
+
+  return kSuccess;
+}
