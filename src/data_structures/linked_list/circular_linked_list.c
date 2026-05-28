@@ -810,3 +810,60 @@ ResultCode CircularLinkedList_Split(CircularLinkedList *list, size_t index,
 
   return kSuccess;
 }
+
+/**
+ * CircularLinkedList_Merge - Merges two circular lists into one
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Handle empty list cases
+ * 3. Link tail of list1 to head of list2
+ * 4. Link tail of list2 to head of list1
+ *
+ * @param list1 First circular list (will contain merged result
+ * @param list2 Second circular list (will be cleared)
+ * @reurn Result code
+ *
+ * @complexity O(1)
+ */
+ResultCode CircularLinkedList_Merge(CircularLinkedList *list1,
+                                    CircularLinkedList *list2) {
+  /* Step 1: Validate parameters */
+  if (list1 == NULL || list2 == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Handle empty list cases */
+  if (list2->size == 0) {
+    return kSuccess;
+  }
+
+  if (list1->size == 0) {
+    /* Copy list1 into list1 */
+    list1->head = list2->head;
+    list1->tail = list2->tail;
+    list1->size = list2->size;
+
+    /* Clear list2 */
+    list2->head = NULL;
+    list2->tail = NULL;
+    list2->size = 0;
+
+    return kSuccess;
+  }
+
+  /* Step 3: Link the lists together */
+  list1->tail->next = list2->head;
+  list2->tail->next = list1->head;
+
+  /* Step 4: Update list1's tail and size */
+  list1->tail = list2->tail;
+  list1->size = list2->size;
+
+  /* Step 5: Clear list2 */
+  list2->head = NULL;
+  list2->tail = NULL;
+  list2->size = 0;
+
+  return kSuccess;
+}
