@@ -732,3 +732,81 @@ ResultCode CircularLinkedList_Rotate(CircularLinkedList *list, size_t steps) {
 
   return kSuccess;
 }
+
+/**
+ * CircularLinkedList_Split - Splits circular list into two at  given index
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check index is valid (0 < index < size)
+ * 3. Create two new lists
+ * 4. Find split point
+ * 5. Assign nodes to each list
+ * 6. Clear original list
+ *
+ * @param list Circular linked list to split (will be cleared)
+ * @param index Position to split at (0 < index < size)
+ * @param out_list1 Output for first part (indices 0 to index -1)
+ * @param out_list2 Output for second part (indices index to size - 1)
+ * @return Result code
+ *
+ * @complexity O(index)
+ */
+ResultCode CircularLinkedList_Split(CircularLinkedList *list, size_t index,
+                                    CircularLinkedList **out_list1,
+                                    CircularLinkedList **out_list2) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_list1 == NULL || out_list2 == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Validate split index */
+  if (index == 0 || index >= list->size) {
+    return kInvalidArgument;
+  }
+
+  /* Step 3: Create two new lists */
+  ResultCode rc = CircularLinkedList_Create(out_list1);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  rc = CircularLinkedList_Create(out_list2);
+  if (rc != kSuccess) {
+    CircularLinkedList_Destroy(*out_list1);
+    return rc;
+  }
+
+  CircularLinkedList *list1 = *out_list1;
+  CircularLinkedList *list2 = *out_list2;
+
+  /* Step 4: Find split point (bide at index - 1) */
+  CListNode *split_node;
+  rc = _get_node_at(list, index - 1, &split_node);
+  if (rc != kSuccess) {
+    CircularLinkedList_Destroy(list1);
+    CircularLinkedList_Destroy(list2);
+    return rc;
+  }
+
+  CListNode *second_head = split_node->next;
+
+  /* Step 5: Assign nodes to first list (head to slit_node) */
+  list1->head = list->head;
+  list1->tail = split_node;
+  list1->tail->next = list1->head;
+  list1->size = index;
+
+  /* Step 6: Assign node to second list (second_head to tail) */
+  list2->head = second_head;
+  list2->tail = list->tail;
+  list2->tail->next = list->head;
+  list2->size = list->size - index;
+
+  /* Step 7: Clear original list */
+  list->head = NULL;
+  list->tail = NULL;
+  list->size = 0;
+
+  return kSuccess;
+}
