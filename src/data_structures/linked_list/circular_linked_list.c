@@ -867,3 +867,32 @@ ResultCode CircularLinkedList_Merge(CircularLinkedList *list1,
 
   return kSuccess;
 }
+
+/* CircularLinkedList_IsValid - Validates circular list priperties
+ *
+ * Check:
+ * - For empty list: head == NULL && tail == NULL
+ * - For non-empty: tail != NULL && tail->next == head
+ *
+ * @param list Circular linked list to validate
+ * @return true if valid circular list, false otherwise
+ *
+ * @complexity O(1)
+ */
+
+bool CircularLinkedList_IsValid(const CircularLinkedList *list) {
+  if (list == NULL) {
+    return false;
+  }
+
+  if (list->size == 0) {
+    return list->head == NULL && list->tail == NULL;
+  }
+
+  /* Check tail->next == head (circular property) */
+  if (list->tail == NULL || list->tail->next != list->head) {
+    return false;
+  }
+
+  return true;
+}
