@@ -929,3 +929,25 @@ ResultCode CircularLinkedList_GetPrevious(const CircularLinkedList *list,
 
   return kNotFound;
 }
+
+/**
+ * CircularLinkedList_GetNext - Returns the next node (For iteration)
+ *
+ * @param list Circular linked list (for validation)
+ * @param node Current node (must be in the list)
+ * @param out_next Output pointer to receive next node
+ * @return Result code
+ * @complexity O(1)
+ */
+ResultCode CircularLinkedList_GetNext(const CircularLinkedList *list,
+                                      CListNode *node, CListNode **out_next) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || node == NULL || out_next == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Get next node and return */
+  *out_next = node->next;
+
+  return kSuccess;
+}
