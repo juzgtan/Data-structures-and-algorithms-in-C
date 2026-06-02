@@ -1016,3 +1016,59 @@ ResultCode CircularLinkedList_RemoveNode(CircularLinkedList *list,
 
   return kSuccess;
 }
+
+/**
+ * CircularLinkedList_Find - Find a node by its data
+ *
+ * Implementation flow:
+ * 1.Validate parameters
+ * 2. Handle empty list
+ * 3. Traversal and search
+ *
+ * @param list Circular linked list to search
+ * @param data Data to find
+ * @param compare Comparison function (NULL for pointer compasition)
+ * @param out_node Output ponter to receive found node
+ * @return Result code
+ *
+ * complexity O(n)
+ */
+
+ResultCode CircularLinkedList_Find(const CircularLinkedList *list,
+                                   const void *data,
+                                   int (*compare)(const void *, const void *),
+                                   CListNode **out_node) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || out_node == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Handle empty list */
+  if (list->size == 0) {
+    return kNotFound;
+  }
+
+  /* Step 3: Traversal and search */
+  CListNode *current = list->head;
+  size_t count = 0;
+
+  do {
+    int match = 0;
+    if (compare != NULL) {
+      match = compare(data, current->data) == 0;
+    } else {
+      match = (data == current->data);
+    }
+
+    if (match) {
+      *out_node = current;
+
+      return kSuccess;
+    }
+
+    current = current->next;
+    count++;
+  } while (current != list->head && count < list->size);
+
+  return kNotFound;
+}
