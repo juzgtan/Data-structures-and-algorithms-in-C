@@ -896,3 +896,36 @@ bool CircularLinkedList_IsValid(const CircularLinkedList *list) {
 
   return true;
 }
+
+/** CircularLinkedList_GetPrevious - Finds the previous node
+ *
+ * @param list Circular linked list to search
+ * @param node Node to find previous of
+ * @param out_prev Output pointer to receive previous node
+ * @return Result code
+ *
+ * @complexity O(1)
+ */
+ResultCode CircularLinkedList_GetPrevious(const CircularLinkedList *list,
+                                          CListNode *node,
+                                          CListNode **out_prev) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || node == NULL || out_prev == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Linner search for previous node */
+  CListNode *current = list->head;
+  size_t count = 0;
+
+  do {
+    if (current->next == node) {
+      *out_prev = current;
+      return kSuccess;
+    }
+    current = current->next;
+    count++;
+  } while (current != list->head && count < list->size);
+
+  return kNotFound;
+}
