@@ -951,3 +951,68 @@ ResultCode CircularLinkedList_GetNext(const CircularLinkedList *list,
 
   return kSuccess;
 }
+
+/**
+ * CircularLinkedList_RemoveNode - Removes a specific node
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check list not empty
+ * 3. Handle special case - single node
+ * 4. Find previous node
+ * 5. Remove node
+ * 6. Update head/tail if needed
+ *
+ * @param list Circular linked list to modify
+ * @param node Node to remove (must be in the list )
+ * @return Result code
+ *
+ * @complexity O (n) - needs previous node via traversal
+ */
+ResultCode CircularLinkedList_RemoveNode(CircularLinkedList *list,
+                                         CListNode *node) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || node == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check list not empty */
+  ResultCode rc = _check_not_empty(list);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Special case - single node */
+  if (list->size == 1 && node == list->head) {
+    free(node);
+    list->head = NULL;
+    list->tail = NULL;
+    list->size = 0;
+
+    return kSuccess;
+  }
+
+  /* Step 4: Find previous node */
+  CListNode *prev;
+  rc = CircularLinkedList_GetPrevious(list, node, &prev);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 5: Remove node */
+  prev->next = node->next;
+
+  /* Step 6: Update head/tail if needed */
+  if (node == list->head) {
+    list->head = node->next;
+  }
+
+  if (node == list->tail) {
+    list->tail = prev;
+  }
+
+  free(node);
+  list->size--;
+
+  return kSuccess;
+}
