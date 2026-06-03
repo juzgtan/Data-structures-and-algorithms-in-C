@@ -1115,3 +1115,42 @@ ResultCode CircularLinkedList_Traverse(const CircularLinkedList *list,
 
   return kSuccess;
 }
+
+/**
+ * CircularLinkedList_TraverseFrom - Traverses starting from arbitrary node
+ *
+ * @param list Circular linked list to traverse
+ * @param start Starting node (NULL starts from head)
+ * @param visit Callback function for earch node
+ * @param user_data User data to pass to callback
+ * @return Result code
+ *
+ * @complexity O(n)
+ */
+ResultCode CircularLinkedList_TraverseFrom(const CircularLinkedList *list,
+                                           CListNode *start,
+                                           CircularVisitFunction visit,
+                                           void *user_data) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || visit == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Handle empty list */
+  if (list->size == 0) {
+    return kSuccess;
+  }
+
+  /* Step 3: Start from specified node or head */
+  CListNode *current = (start == NULL) ? list->head : start;
+  CListNode *start_node = current;
+  size_t count = 0;
+
+  do {
+    visit(current->data, user_data);
+    current = current->next;
+    count++;
+  } while (current != start_node && count < list->size);
+
+  return kSuccess;
+}
