@@ -1072,3 +1072,46 @@ ResultCode CircularLinkedList_Find(const CircularLinkedList *list,
 
   return kNotFound;
 }
+
+/* ============================================================================
+ * TRAVERSAL HELPERS
+ * ============================================================================
+ */
+
+/**
+ * CircularLinkedList_Traverse - Traverse - tje entrie circular list
+ *
+ * @param list Circular linked list to traverse
+ * @param visit Callback function for each node
+ * @param user_data User data to pass to callback
+ * @return Result code
+ *
+ * @complexity O(n)
+ */
+ResultCode CircularLinkedList_Traverse(const CircularLinkedList *list,
+                                       CircularVisitFunction visit,
+                                       void *user_data) {
+  /* Step 1: Validate parameters */
+  if (list == NULL || visit == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Handle empty list */
+  if (list->size == 0) {
+    return kSuccess;
+  }
+
+  /* Step 3: Traverse all nodes once
+   * Stop when we return to head (detects full circle)
+   */
+  CListNode *current = list->head;
+  size_t count = 0;
+
+  do {
+    visit(current->data, user_data);
+    current = current->next;
+    count++;
+  } while (current != list->head && count < list->size);
+
+  return kSuccess;
+}
