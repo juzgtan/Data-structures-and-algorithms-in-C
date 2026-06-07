@@ -401,3 +401,35 @@ ResultCode Queue_Dequeue(Queue *q, void **out_value) {
 
   return kSuccess;
 }
+
+/**
+ * Queue_Peek - Returns the front element without removing it
+ *
+ * Implementation flow:
+ * 1. Validate parameters (queue, and output pointer not NULL)
+ * 2. Check queue is not empty
+ * 3. Retrieve value from front position
+ * 4. Set output pointer
+ *
+ * @param q Queue to access
+ * @param out_value Output pointer to receive front value
+ * @return Result code
+
+ * @complexity O(1)
+ */
+ResultCode Queue_Peek(const Queue *q, void **out_value) {
+  /* Step 1: Validate parameters */
+  if (q == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check queue is not empty */
+  if (Queue_IsEmpty(q)) {
+    return kEmpty;
+  }
+
+  /* Step 3: Retrieve value fromt front position */
+  *out_value = q->data[q->front];
+
+  return kSuccess;
+}
