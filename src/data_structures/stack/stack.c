@@ -212,3 +212,38 @@ ResultCode Stack_Push(Stack *s, void *value) {
 
   return kSuccess;
 }
+
+/**
+ * Stack_Pop - Removes and returns the top element
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check stack is not empty
+ * 3. Decrement tio
+ * 4. Restrieve value from new top position
+ * 5. Set output pointer
+ *
+ * @param s Stack to modify
+ * @param out_value Output pointer to receive popped value
+ * return Result code
+ *
+ * @complexity O(1)
+ */
+ResultCode Stack_Pop(Stack *s, void **out_value) {
+  /* Step 1: Validate parameters */
+  if (s == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+  /* Step 2: Check stack not empty */
+  if (Stack_IsEmpty(s)) {
+    return kEmpty;
+  }
+
+  /* Step 3: Decrement top */
+  s->top--;
+
+  /* Step 4: Retrieve value */
+  *out_value = s->data[s->top];
+
+  return kSuccess;
+}
