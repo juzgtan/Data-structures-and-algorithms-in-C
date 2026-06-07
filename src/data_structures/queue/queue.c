@@ -17,6 +17,133 @@
  */
 static bool _is_full(const Queue *q) { return q->size == q->capacity; }
 
+/**
+ * @brief Ensures the queue has enough capacity for one more element
+ * @param q Queue to grow if full
+ * @return ResultCode
+ *
+ * Growth strategy:
+ * - capacity == 0  -> allocate 16 slots
+ * - otherwise      -> double capacity
+ *
+ * Resize strategy:
+ * - Allocate a new buffer
+ * - Copy elements in logical queue order
+ * - Reset front to 0
+ * - Reset rear to size - 1
+ *
+ * Example:
+ *
+ * Before resize (capacity = 8):
+ *
+ *   index:  0  1  2  3  4  5  6  7
+ *           A  B  C  D  E  F  G  H
+ *                          ^front
+ *                       ^rear
+ *
+ * front = 5
+ * rear  = 4
+ *
+ * Logical queue order:
+ *
+ *   F -> G -> H -> A -> B -> C -> D -> E
+ *
+ * After resize (capacity = 16):
+ *
+ *   index:  0  1  2  3  4  5  6  7
+ *           F  G  H  A  B  C  D  E
+ *           ^front               ^rear
+ *
+ * front = 0
+ * rear  = size - 1
+ */
+#define QUEUE_INITIAL_CAPACITY 16
+#define QUEUE_GROWTH_FACTOR 2
+
+static ResultCode _ensure_capacity(Queue *q) {
+  /* Step 1: Validate quaue pointer */
+  if (q == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Already have enough capacity, No resize needed */
+  if (q->size < q->capacity) {
+    return kSuccess;
+  }
+
+  /* Step 3: Caculate new capacity
+   * Formula: new_capacity = old_capacity * 2 (or 16 if starting from 0)
+   */
+  size_t new_capacity = q->capacity == 0 ? QUEUE_INITIAL_CAPACITY : q->capacity;
+
+  /* Step 4: Prevent arthimetic overflow
+   * EXAMPLE: new_capacity = 1GB, doubling would exceed SIZE_MAX on 32bit
+   * Check: new_capacity > SIZE_MAX / 2 -> overflow would occur
+   */
+  if (new_capacity > SIZE_MAX / QUEUE_GROWTH_FACTOR) {
+    return kArithmeticOverflow;
+  }
+  new_capacity *= QUEUE_GROWTH_FACTOR;
+
+  /* Step 5: Check overflow for multipication with sizeof(void*)
+   * new_capacity * sizeof(void*) must not exceed SIZE_MAX
+   */
+  if (new_capacity > SIZE_MAX / sizeof(void *)) {
+    return kArithmeticOverflow;
+  }
+
+  /* Step 6: Reallocate memory fo data buffer
+   * We intentionaly use malloc instead of realloc because
+   * we want to rebuild the queue into a clean contiguous layout
+   * regardless of wrap-around state */
+  void **new_data = (void **)malloc(new_capacity * sizeof(void *));
+  if (new_data == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 7: Copy elements in logical queue order
+   * Circular queue physical layout may not match logical FIFO order.
+   * Formula: physical_index = (front + i) % old_capacity
+   * Examples: capacity = 8, front = 5, size = 8
+   * i=0 -> index=5
+   * i=1 -> index=6
+   * i=2 -> index=7
+   * i=3 -> index=0
+   * ...
+   * This walks through the queue exactly in FIFO order.
+   */
+  if (q->size > 0) {
+    for (size_t i = 0; i < q->size; i++) {
+      size_t old_index = (q->front + 1) % q->capacity;
+      new_data[i] = q->data[old_index];
+    }
+  }
+  /* Step 8: Release old buffer
+   * Safe because all elements have already been copied.
+   */
+  free(q->data);
+
+  /* Step 9: Update queue metadata */
+  q->data = new_data;
+  q->capacity = new_capacity;
+
+  /* Step 10: Rebuild queue layout
+   * Since elements are now stored contiguously:
+   *   [0 .. size-1]
+   * front always becomes 0.
+   * rear points to the last valid element.
+   */
+  if (q->size == 0) {
+    q->front = 0;
+    q->rear = 0;
+  } else {
+    q->front = 0;
+    q->rear = q->size - 1;
+  }
+
+  return kSuccess;
+}
+
 /* ============================================================================
  * LIFECYCLE FUNCTIONS
  * ============================================================================
@@ -172,3 +299,59 @@ bool Queue_IsEmpty(const Queue *q) { return q == NULL ? true : q->size == 0; }
  * Return true if queue if NULL or full
  */
 bool Queue_IsFull(const Queue *q) { return q == NULL ? true : _is_full(q); }
+
+/* ============================================================================
+ * MODIFIER FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * Queue_Enqueue - Adds an element to the back of the queue
+ *
+ * Implementation flow:
+ * 1. Validate parameters (queue and value not NULL)
+ * 2. Ensuse enough capacity (grow if needed)
+ * 3. Store value at rear position
+ * 4. Update rear index using modulo arithmetic (wap-around)
+ * 5. Increment size
+ *
+ * Circular buffer mechanics
+ * - When rear reaches capacity - 1, next enqueue wraps to index 0
+ * EXAMPLE: capacity = 8, rear = 7 , after enqueue: rear = (7 + 1) % 8
+ *
+ * @param q Queue to modify
+ * @param value Pointer to value to enqueue
+ * @return Result code
+
+ * @complexity O(1) - amortized
+ */
+ResultCode Queue_Enqueue(Queue *q, void *value) {
+  /* Step 1: Validate parameters */
+  if (q == NULL || value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Ensure capacity for one more element
+   * This may triger reallocation and buffer reorganization
+   */
+  ResultCode rc = _ensure_capacity(q);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 3: Store value at rear position
+   * q->rear points to the next available slot
+   */
+  q->data[q->rear] = value;
+
+  /* Step 4: Update rear index (circular)
+   * Formular: rear = (rear + 1 ) % capacity
+   * This wraps around to 0 when reaching the end
+   */
+  q->rear = (q->rear + 1) % q->capacity;
+
+  /* Step 5: Increment size */
+  q->size++;
+
+  return kSuccess;
+}
