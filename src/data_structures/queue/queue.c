@@ -75,3 +75,36 @@ ResultCode Queue_Create(size_t capacity, Queue **result) {
 
   return kSuccess;
 }
+
+/**
+ * Queue_Destroy - Free all memory assiciated with the queue
+ *
+ * Implementation flow:
+ * 1. Check if queue is NULL (Silently return)
+ * 2. Free the data buffer if it exists
+ * 3. Reset all fields to zero (helps detect use-after-free bugs)
+ * 4. Free the Queue struct ifself
+ *
+ * @param q Queue to destroy (can be NULL)
+ */
+void Queue_Destroy(Queue *q) {
+  /* Step 1: Handle NUll gracefully */
+  if (q == NULL) {
+    return;
+  }
+
+  /* Step 2: Free data buffer if allocated */
+  if (q->data != NULL) {
+    free(q->data);
+    q->data = NULL; /* Prevent dangling pointer */
+  }
+
+  /* Step 3: Reset fields (helps debug use-after-free issues) */
+  q->front = 0;
+  q->rear = 0;
+  q->size = 0;
+  q->capacity = 0;
+
+  /* Step 4: Free the struct ifself */
+  free(q);
+}
