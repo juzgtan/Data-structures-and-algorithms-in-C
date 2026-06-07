@@ -4,6 +4,19 @@
 #include <stdlib.h>
 
 /* ============================================================================
+ * INTERNAL HELPER FUNCTIONS (Private - not exposed in header)
+ * ============================================================================
+ */
+
+/**
+ * @brief Check if the stack is full
+ *
+ * @param s Stack to check
+ * @return true if full, false othewise
+ */
+static bool _is_full(const Stack *s) { return s->top == s->capacity; }
+
+/* ============================================================================
  * LIFECYCLE FUNCTIONS
  * ============================================================================
  */
@@ -104,3 +117,5 @@ void Stack_Clear(Stack *s) {
  */
 size_t Stack_Size(const Stack *s) { return s == NULL ? 0 : s->top; }
 size_t Stack_Capacity(const Stack *s) { return s == NULL ? 0 : s->capacity; }
+bool Stack_IsEmpty(const Stack *s) { return s == NULL ? true : s->top == 0; }
+bool Stack_IsFull(const Stack *s) { return s == NULL ? true : _is_full(s); }
