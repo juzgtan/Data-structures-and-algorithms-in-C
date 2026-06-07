@@ -97,3 +97,10 @@ void Stack_Clear(Stack *s) {
     s->top = 0;
   }
 }
+
+/* ============================================================================
+ * CAPACITY FUNCTIONS
+ * ============================================================================
+ */
+size_t Stack_Size(const Stack *s) { return s == NULL ? 0 : s->top; }
+size_t Stack_Capacity(const Stack *s) { return s == NULL ? 0 : s->capacity; }
