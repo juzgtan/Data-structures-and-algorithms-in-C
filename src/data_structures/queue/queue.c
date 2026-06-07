@@ -108,3 +108,22 @@ void Queue_Destroy(Queue *q) {
   /* Step 4: Free the struct ifself */
   free(q);
 }
+
+/**
+ * Queue_Clear - Removes all elements but keeps the capacity
+ *
+ * Simply resets front, read, and size to 0. The data buffer remains allocated
+ * to avoid reallocation when elements are added again.
+ *
+ * NOTE: Does NOT free individual elements (Caller is reponsible for
+ * freeing any dynamically allocated data stored in the queue)
+ *
+ * @param q Queue to clear
+ */
+void Queue_Clear(Queue *q) {
+  if (q != NULL) {
+    q->front = 0;
+    q->rear = 0;
+    q->size = 0;
+  }
+}
