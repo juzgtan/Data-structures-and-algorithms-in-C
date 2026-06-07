@@ -247,3 +247,35 @@ ResultCode Stack_Pop(Stack *s, void **out_value) {
 
   return kSuccess;
 }
+
+/**
+ * Stack_Peek - Returns the top element without removing it
+ *
+ * Implementation flow:
+ * 1. Validate parameters
+ * 2. Check stack is not empty
+ * 3. Retrieve value from top - 1 position
+ * 4. Set output pointer
+ *
+ * @param s Stack to access
+ * @param out_value Output pointer to receive top value
+ * return Result code
+ *
+ * @complexity O(1)
+ */
+ResultCode Stack_Peek(const Stack *s, void **out_value) {
+  /* Step 1: Validate parameters */
+  if (s == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check stack not empty */
+  if (Stack_IsEmpty(s)) {
+    return kEmpty;
+  }
+
+  /* Step 3: Retrieve value */
+  *out_value = s->data[s->top];
+
+  return kSuccess;
+}
