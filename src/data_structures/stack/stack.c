@@ -86,3 +86,14 @@ void Stack_Destroy(Stack *s) {
   s->capacity = 0;
   free(s);
 }
+
+/**
+ * Stack_Clear - Removes all elements from the stack
+ *
+ * @param s Stack to clear
+ */
+void Stack_Clear(Stack *s) {
+  if (s != NULL) {
+    s->top = 0;
+  }
+}
