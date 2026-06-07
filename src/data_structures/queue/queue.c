@@ -355,3 +355,49 @@ ResultCode Queue_Enqueue(Queue *q, void *value) {
 
   return kSuccess;
 }
+
+/**
+ * Queue_Dequeue - Removes and returns the front element
+ *
+ * Implementation flow:
+ * 1. Validate parameters (queue and output pointer or not NULL)
+ * 2. Check queue is not empty
+ * 3. Retrieve value from front position
+ * 4. Update front index using modulo arthimetic (wrap-around)
+ * 5. Decrement size
+ * 6. Set output pointer
+ *
+ * NOTE: Does NOT free the memory pointed to by the value.
+ * Caller is reponsible for freeing dynamically allocated data.
+ *
+ * @param q Queue to modify
+ * @param out_value Output pointer to receive dequeued value
+ * @return Result code
+ *
+ * @complexity O(1)
+ */
+ResultCode Queue_Dequeue(Queue *q, void **out_value) {
+  /* Step 1: Validate parameters */
+  if (q == NULL || out_value == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Check queue not empty */
+  if (Queue_IsEmpty(q)) {
+    return kEmpty;
+  }
+
+  /* Step 3:  Retrieve value from front position */
+  *out_value = q->data[q->front];
+
+  /* Step 4: Update front index (circular)
+   * Formula: front = (front + 1) % capacity
+   * This wrap around to 0 when reaching the end
+   */
+  q->front = (q->front + 1) % q->capacity;
+
+  /* Step 5: Decrement size */
+  q->size--;
+
+  return kSuccess;
+}
