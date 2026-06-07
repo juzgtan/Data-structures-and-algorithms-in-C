@@ -127,3 +127,22 @@ void Queue_Clear(Queue *q) {
     q->size = 0;
   }
 }
+
+/* ============================================================================
+ * CAPACITY FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * Queue_Size - Return the number of elements currently in the queue
+ *
+ * Return 0 if queue if NULL (safe behavior)
+ */
+size_t Queue_Size(const Queue *q) { return q == NULL ? 0 : q->size; }
+
+/**
+ * Queue_Capacity - Returns the current capacity (maximum elements before
+ * reallocation)
+ * Return 0 if  queue is NULL
+ */
+size_t Queue_Capacity(const Queue *q) { return q == NULL ? 0 : q->capacity; }
