@@ -1,7 +1,21 @@
 #include "data_structures/queue/queue.h"
 #include "result_code.h"
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+/* ============================================================================
+ * INTERNAL HELPER FUNCTIONS (Private - not exposed in header)
+ * ============================================================================
+ */
+
+/**
+ * @brief Check if the queue if full
+ *
+ * @param q Queue to check
+ * @return true if full, false otherwise
+ */
+static bool _is_full(const Queue *q) { return q->size == q->capacity; }
 
 /* ============================================================================
  * LIFECYCLE FUNCTIONS
@@ -146,3 +160,15 @@ size_t Queue_Size(const Queue *q) { return q == NULL ? 0 : q->size; }
  * Return 0 if  queue is NULL
  */
 size_t Queue_Capacity(const Queue *q) { return q == NULL ? 0 : q->capacity; }
+
+/**
+ * Queue_IsEmpty - Checks if the queue contains any elements
+ * Return true if queue is NULL of empty
+ */
+bool Queue_IsEmpty(const Queue *q) { return q == NULL ? true : q->size == 0; }
+
+/**
+ * Queue_IsFull - Checks if the queue has reacher its capacity
+ * Return true if queue if NULL or full
+ */
+bool Queue_IsFull(const Queue *q) { return q == NULL ? true : _is_full(q); }
