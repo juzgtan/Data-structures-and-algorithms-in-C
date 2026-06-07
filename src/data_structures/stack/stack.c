@@ -66,3 +66,23 @@ ResultCode Stack_Create(size_t capacity, Stack **result) {
 
   return kSuccess;
 }
+
+/**
+ * Stack_Destroy - Frees all memory associated with the stack
+ *
+ * @param s Stack to destroy (can be NULL)
+ */
+void Stack_Destroy(Stack *s) {
+  if (s == NULL) {
+    return;
+  }
+
+  if (s->data != NULL) {
+    free(s->data);
+    s->data = NULL;
+  }
+
+  s->top = 0;
+  s->capacity = 0;
+  free(s);
+}
