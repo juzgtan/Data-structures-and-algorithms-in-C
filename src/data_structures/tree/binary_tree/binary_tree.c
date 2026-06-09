@@ -3,6 +3,34 @@
 #include <stdlib.h>
 
 /* ============================================================================
+ * INTERNAL HELPER FUNCTIONS (Private - not exposed in header)
+ * ============================================================================
+ */
+
+/**
+ * @brief Creates a new binary tree node
+ * @param data Pointer to data to store in the node
+ * @return Pointer to new node, or NULL if allocation fails
+ *
+ * NOTE: This function does not copy data - it stores the pointer directly
+ * Caller is responsible for managing the lifetime of the data
+ */
+static TreeNode *_create_node(void *data) {
+  /* Step 1: Allocate memory for the node */
+  TreeNode *node = (TreeNode *)malloc(sizeof(TreeNode));
+  if (node == NULL) {
+    return NULL;
+  }
+
+  /* Step 2: Initialize node fields */
+  node->data = data;  /* Store pointer to data (shallow copy) */
+  node->left = NULL;  /* Left child initially NULL */
+  node->right = NULL; /* Right child initially NULL */
+
+  return node;
+}
+
+/* ============================================================================
  * LIFECYCLE FUNCTIONS
  * ============================================================================
  */
@@ -49,6 +77,57 @@ ResultCode BinaryTree_Create(BinaryTree **result) {
 
   /* Step 6: Success - set output and return */
   *result = tree;
+
+  return kSuccess;
+}
+
+/**
+ * BinaryTree_CreateFromRoot - Creates a binary tree with a root node
+ *
+ * @param root_data Data for the root node
+ * @param result Output pointer to receive the new BinaryTree
+ * @return Result Code
+ */
+ResultCode BinaryTree_CreateFromRoot(void *root_data, BinaryTree **result) {
+  /* Step 1: Create empty tree */
+  ResultCode rc = BinaryTree_Create(result);
+  if (rc != kSuccess) {
+    return rc;
+  }
+
+  /* Step 2: Set root */
+  return BinaryTree_SetRoot(*result, root_data);
+}
+
+/* ============================================================================
+ * MODIFIER FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * BinaryTree_SetRoot - Sets the root node of the binaytree
+ *
+ * NOTE: This replaces the entire tree, Old nodes are NOT freed automatically
+ *
+ * @param tree Binary tree to modify
+ * @param data Data for the root node
+ * @return Resut code
+ */
+ResultCode BinaryTree_SetRoot(BinaryTree *tree, void *data) {
+  /* Step 1: Validate parameters */
+  if (tree == NULL || data == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Create new root node */
+  TreeNode *new_root = _create_node(data);
+  if (new_root == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 3: Replace root (old root is lost - potential memoly leak) */
+  tree->root = new_root;
+  tree->size = 1;
 
   return kSuccess;
 }
