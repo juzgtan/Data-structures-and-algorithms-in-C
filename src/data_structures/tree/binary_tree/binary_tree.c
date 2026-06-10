@@ -30,6 +30,26 @@ static TreeNode *_create_node(void *data) {
   return node;
 }
 
+/**
+ * @brief Recusively frees all nodes in a subtree
+ *
+ * @param node Root of the subtree to free
+ *
+ * Post-order traversal: free left, free right, free current
+ */
+static void _free_subtree(TreeNode *node) {
+  if (node == NULL) {
+    return;
+  }
+
+  /* Free left and right subtree first (post-order ) */
+  _free_subtree(node->left);
+  _free_subtree(node->right);
+
+  /* Free current node */
+  free(node);
+}
+
 /* ============================================================================
  * LIFECYCLE FUNCTIONS
  * ============================================================================
@@ -97,6 +117,31 @@ ResultCode BinaryTree_CreateFromRoot(void *root_data, BinaryTree **result) {
 
   /* Step 2: Set root */
   return BinaryTree_SetRoot(*result, root_data);
+}
+
+/**
+ * BinaryTree_Clear - Removes all nodes from the binary tree
+ *
+ * Implementation flow:
+ * 1. Check if tree NULL (silently return )
+ * 2. Free all nodes starting from root
+ * 3. Reset root and size
+ *
+ * @param tree Binary tree to clear
+ *
+ * @complexity: O(n)
+ */
+void BinaryTree_Clear(BinaryTree *tree) {
+  if (tree == NULL) {
+    return;
+  }
+
+  /* Free all nodes using post-order traversal */
+  _free_subtree(tree->root);
+
+  /* Reset to empty state */
+  tree->root = NULL;
+  tree->size = 0;
 }
 
 /* ============================================================================
