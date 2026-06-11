@@ -157,6 +157,14 @@ size_t BinaryTree_Size(const BinaryTree *tree) {
   return tree == NULL ? 0 : tree->size;
 }
 
+/**
+ * BinaryTree_IsEmpty - Checks if the binary tree contains any nodes
+ * Returns true if tree is NULL or empty
+ */
+bool BinaryTree_IsEmpty(const BinaryTree *tree) {
+  return tree == NULL ? true : tree->size == 0;
+}
+
 /* ============================================================================
  * MODIFIER FUNCTIONS
  * ============================================================================
