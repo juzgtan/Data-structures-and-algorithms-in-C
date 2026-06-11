@@ -72,6 +72,26 @@ static size_t _computer_height(const TreeNode *node) {
   return 1 + (left_height > right_height ? left_height : right_height);
 }
 
+/**
+ * @brief Recusively counts leaf nodes in a subtree
+ *
+ * @param node Root of the subtree
+ * @return Number of leaf nodes (nodes with no children)
+ */
+static size_t _count_leaves(const TreeNode *node) {
+  if (node == NULL) {
+    return 0;
+  }
+
+  /* Leaf node: Both children NULL */
+  if (node->left == NULL && node->right == NULL) {
+    return 1;
+  }
+
+  /* Internal node: sum of leaves in left and right subtrees */
+  return _count_leaves(node->left) + _count_leaves(node->right);
+}
+
 /* ============================================================================
  * LIFECYCLE FUNCTIONS
  * ============================================================================
@@ -206,6 +226,23 @@ size_t BinaryTree_Height(const BinaryTree *tree) {
 
   return _computer_height(tree->root);
 }
+
+/**
+ * BinaryTree_CountLeaves - Return the number of leaf nodes
+ *
+ * Leaf node: Node with no children (both left and right are NULL)
+ *
+ * @param tree Binary tree to examine
+ * @return Number of leaf nodes
+ */
+size_t BinaryTree_CountLeaves(const BinaryTree *tree) {
+  if (tree == NULL || tree->root == NULL) {
+    return 0;
+  }
+
+  return _count_leaves(tree->root);
+}
+
 /* ============================================================================
  * MODIFIER FUNCTIONS
  * ============================================================================
