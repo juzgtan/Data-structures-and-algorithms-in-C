@@ -145,6 +145,19 @@ void BinaryTree_Clear(BinaryTree *tree) {
 }
 
 /* ============================================================================
+ * CAPACITY FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * BinaryTree_Size - Returns the numbers of nodes in the binary tree
+ * Return 0 uf tree is NULL (safe behavior)
+ */
+size_t BinaryTree_Size(const BinaryTree *tree) {
+  return tree == NULL ? 0 : tree->size;
+}
+
+/* ============================================================================
  * MODIFIER FUNCTIONS
  * ============================================================================
  */
