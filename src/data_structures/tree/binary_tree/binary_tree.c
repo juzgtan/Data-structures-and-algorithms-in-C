@@ -50,6 +50,28 @@ static void _free_subtree(TreeNode *node) {
   free(node);
 }
 
+/**
+ * @brief Recusively computers the height of a sub tree
+ *
+ * @param node Root of the subtree
+ * @return Height (0 for empty tree, max chidlren height + 1 for non empty)
+ *
+ * Height definition: Number of edges on longest path from node to leaf
+ * - Empty tree: height = 0
+ * - Single node: height = 0
+ * - Node with children: height = 1 + max(left_height, right_height)
+ */
+static size_t _computer_height(const TreeNode *node) {
+  if (node == NULL) {
+    return 0;
+  }
+
+  size_t left_height = _computer_height(node->left);
+  size_t right_height = _computer_height(node->right);
+
+  return 1 + (left_height > right_height ? left_height : right_height);
+}
+
 /* ============================================================================
  * LIFECYCLE FUNCTIONS
  * ============================================================================
@@ -165,6 +187,25 @@ bool BinaryTree_IsEmpty(const BinaryTree *tree) {
   return tree == NULL ? true : tree->size == 0;
 }
 
+/**
+ * BinaryTree_Height - Returns the height of the tree
+ *
+ * Height definition: number of edges on longest path from root to leaf
+ * - Empty tree : 0
+ * - Single node: 0
+ *
+ * @param tree Binary tree to examine
+ * @return Height of the tree
+ *
+ * @complexity O(n)
+ */
+size_t BinaryTree_Height(const BinaryTree *tree) {
+  if (tree == NULL || tree->root == NULL) {
+    return 0;
+  }
+
+  return _computer_height(tree->root);
+}
 /* ============================================================================
  * MODIFIER FUNCTIONS
  * ============================================================================
