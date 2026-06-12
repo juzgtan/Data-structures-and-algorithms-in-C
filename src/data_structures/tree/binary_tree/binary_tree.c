@@ -336,3 +336,51 @@ ResultCode BinaryTree_SetRoot(BinaryTree *tree, void *data) {
 
   return kSuccess;
 }
+
+/**
+ * BinaryTree_InsertLeft - Inserts a node as the left child of a parent
+ *
+ * If parentalready has a left child, the old child becomes the left child
+ * of the new node (the new node is inserted between parent and old child)
+ *
+ * EXAMPLE:
+ * Before:       parent        After:        parent
+ *                / \                         / \
+ *            left   right                new    right
+ *                                        /
+ *                                      left
+ *
+ * @param tree Binary tree to modify
+ * @param parent Parent node (must be in the tree)
+ * @param data Data for the new node
+ * @param out_node Output pointer to receive the new node (optional)
+ * @return Result code
+ */
+ResultCode BinaryTree_InsertLeft(BinaryTree *tree, TreeNode *parent, void *data,
+                                 TreeNode **out_node) {
+  /* Step 1: Validate parameters */
+  if (tree == NULL || parent == NULL || data == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Create new node */
+  TreeNode *new_node = _create_node(data);
+  if (new_node == NULL) {
+    return kFailedMemoryAllocation;
+  }
+
+  /* Step 3: Insert as left child
+   * If parent already has left child, make it the left child of new_node */
+  new_node->left = parent->left;
+  parent->left = new_node;
+
+  /* Step 4: Update size */
+  tree->size++;
+
+  /* Step 5: Set output if requested */
+  if (out_node != NULL) {
+    *out_node = new_node;
+  }
+
+  return kSuccess;
+}
