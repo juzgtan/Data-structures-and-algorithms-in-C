@@ -1,5 +1,6 @@
 #include "data_structures/tree/binary_tree/binary_tree.h"
 #include "utils/result_code.h"
+#include <stddef.h>
 #include <stdlib.h>
 
 /* ============================================================================
@@ -92,6 +93,41 @@ static size_t _count_leaves(const TreeNode *node) {
   return _count_leaves(node->left) + _count_leaves(node->right);
 }
 
+/**
+ * @brief Recursively computers the dinameter of a subtree
+ *
+ * @param node Root of the subtree
+ * @param height Output parameter for height of this subtree
+ * @return Diamter (longest path between any two nodes)
+ *
+ * Dinamter may or may not pss through root
+ * Fomula: dinameter = max(left_diameter, right_diameter, left_height +
+ * right_height)
+ */
+static size_t _computer_diameter(const TreeNode *node, size_t *height) {
+  if (node == NULL) {
+    *height = 0;
+    return 0;
+  }
+  size_t left_height, right_height;
+  size_t left_diameter = _computer_diameter(node->left, &left_height);
+  size_t right_diameter = _computer_diameter(node->right, &right_height);
+
+  /* Height of current node = 1 + max(left_height, right_height) */
+  *height = 1 + (left_height > right_height ? left_height : right_height);
+
+  /* Diameter = max of:
+   * - left subtree diameter
+   * - right subtree diameter
+   * - path through root (left_height + right_height)
+   */
+  size_t through_root = left_height + right_height;
+  size_t max_diameter =
+      left_diameter > right_diameter ? left_diameter : right_diameter;
+  max_diameter = max_diameter > through_root ? max_diameter : through_root;
+
+  return max_diameter;
+}
 /* ============================================================================
  * LIFECYCLE FUNCTIONS
  * ============================================================================
@@ -241,6 +277,31 @@ size_t BinaryTree_CountLeaves(const BinaryTree *tree) {
   }
 
   return _count_leaves(tree->root);
+}
+
+/**
+ * BinaryTree_Diameter - Returns the diameter of the tree
+ *
+ * Diameter - Longest path between any two nodes (mesured in edges)
+ * The path may or may not pss through the root.
+ *
+ * EXAMPLE:
+ *       1
+ *     /  \
+ *    2   3
+ *   / \
+ *  4   5
+ *  Diameter = 3 (path 4-2-1-3 or 5-2-1-3)
+ *  @param tree Binary tree to examine
+ *  @return Diameter of the tree
+ */
+size_t BinaryTree_Diameter(const BinaryTree *tree) {
+  if (tree == NULL || tree->root == NULL) {
+    return 0;
+  }
+
+  size_t height;
+  return _computer_diameter(tree->root, &height);
 }
 
 /* ============================================================================
