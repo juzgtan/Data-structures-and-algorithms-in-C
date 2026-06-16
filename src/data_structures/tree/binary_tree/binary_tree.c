@@ -32,6 +32,20 @@ static TreeNode *_create_node(void *data) {
 }
 
 /**
+ * @brief Recusively computer the size of a subtree
+ *
+ * @param node Root of the subtree
+ * return Number of nodes in the subtree
+ */
+static size_t _computer_size(const TreeNode *node) {
+  if (node == NULL) {
+    return 0;
+  }
+
+  return 1 + _computer_size(node->left) + _computer_size(node->right);
+}
+
+/**
  * @brief Recusively frees all nodes in a subtree
  *
  * @param node Root of the subtree to free
@@ -423,4 +437,43 @@ ResultCode BinaryTree_InsertRight(BinaryTree *tree, TreeNode *parent,
   }
 
   return kSuccess;
+}
+
+/**
+ * BinaryTree_RemoveNode - Removes a node and its entrie subtree
+ *
+ * This function removes the specified node and ALL its descendants.
+ * The parent's reference to this node is set to NULL.
+ *
+ * NOTE: This does NOT free the data pointed to by the node.
+ * Caller is responsible for manaing data lifetime.
+ *
+ * @param tree Binary tree to modify
+ * @param node Node to remove (must be in the tree)
+ * @return Result code
+ */
+ResultCode BinaryTree_RemoveNode(BinaryTree *tree, TreeNode *node) {
+  /* Step 1: Validate parameters */
+  if (tree == NULL || node == NULL) {
+    return kNullParameter;
+  }
+
+  /* Step 2: Handle root removal specially */
+  if (node == tree->root) {
+    /* Count nodes to be removal */
+    size_t removed_count = _computer_size(tree->root);
+    _free_subtree(tree->root);
+    tree->root = NULL;
+    tree->size -= removed_count;
+    return kSuccess;
+  }
+
+  /* Step 3: Need to find parent of node
+   * This is inefficient - for better performance, maintain parent pointers
+   * or pass parent as parameter.
+   */
+  /* TODO: Find parent by traversing tree */
+  /* For now, return error - requires parent pointer in TreeNode or find
+   * function */
+  return kDependencyError;
 }
