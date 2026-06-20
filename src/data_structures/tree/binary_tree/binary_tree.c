@@ -142,6 +142,50 @@ static size_t _computer_diameter(const TreeNode *node, size_t *height) {
 
   return max_diameter;
 }
+
+/**
+ * @brief Recursively finds a node with the given data
+ *
+ * @param node Current node
+ * @param data Data to search for
+ * @param compare Comparison function optinal, can be NULL for pointer
+ * comparison
+ * @param out_node Output pointer to receive found node
+ * @return Result code
+ *
+ * Simple preorder traversal search
+ */
+static ResultCode _find_node(TreeNode *node, const void *data,
+                             int (*compare)(const void *, const void *),
+                             TreeNode **out_node) {
+  /* Step 1: Base case - not found */
+  if (node == NULL) {
+    return kNotFound;
+  }
+
+  /* Step 2: Check current node */
+  int match = 0;
+  if (compare != NULL) {
+    match = compare(data, node->data) == 0;
+  } else {
+    match = (data == node->data);
+  }
+
+  if (match) {
+    *out_node = node;
+    return kSuccess;
+  }
+
+  /* STep 3: Rearch left subtree */
+  ResultCode rc = _find_node(node->left, data, compare, out_node);
+  if (rc == kSuccess) {
+    return kSuccess;
+  }
+
+  /* Step 4 Search right subtree*/
+  return _find_node(node->right, data, compare, out_node);
+}
+
 /* ============================================================================
  * LIFECYCLE FUNCTIONS
  * ============================================================================
@@ -476,4 +520,27 @@ ResultCode BinaryTree_RemoveNode(BinaryTree *tree, TreeNode *node) {
   /* For now, return error - requires parent pointer in TreeNode or find
    * function */
   return kDependencyError;
+}
+
+/**
+ * BinaryTree_Find - Finds and returns a node containing the given data
+ *
+ * Simple preorder traversal search
+ *
+ * @param tree Binary tree to search
+ * @param data Data to find
+ * @param compare Comparison function (optinal, NULL for pointer comparison)
+ * @param out_node Output pointer to receive found node
+ * @return Result code
+ */
+ResultCode BinaryTree_Find(const BinaryTree *tree, const void *data,
+                           int (*compare)(const void *, const void *),
+                           TreeNode **out_node) {
+  /* Step 1: Validate parameters */
+  if (tree == NULL || data == NULL || out_node == NULL) {
+    return kNullParameter;
+  }
+
+  /* Search from root */
+  return _find_node(tree->root, data, compare, out_node);
 }
