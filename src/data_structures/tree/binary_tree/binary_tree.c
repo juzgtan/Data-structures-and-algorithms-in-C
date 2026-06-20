@@ -544,3 +544,22 @@ ResultCode BinaryTree_Find(const BinaryTree *tree, const void *data,
   /* Search from root */
   return _find_node(tree->root, data, compare, out_node);
 }
+
+/**
+ * BinaryTree_Contains - Checks if the binary tree contains a specific value
+ *
+ * @param tree Binary tree to search
+ * @param data Data to find
+ * @param compare Comparison function (optinal)
+ * @return true if found, false otherwise
+ */
+bool BinaryTree_Contains(const BinaryTree *tree, const void *data,
+                         int (*compare)(const void *, const void *)) {
+  if (tree == NULL || data == NULL) {
+    return false;
+  }
+
+  TreeNode *node;
+  ResultCode rc = _find_node(tree->root, data, compare, &node);
+  return rc == kSuccess;
+}
